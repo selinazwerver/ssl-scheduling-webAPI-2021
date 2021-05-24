@@ -1,6 +1,6 @@
 import sqlite3
 
-connection = sqlite3.connect('schedule_db.db')
+connection = sqlite3.connect('schedule.db')
 
 with open('schedule.sql') as f:
     connection.executescript(f.read())

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <h1>{% block title %} Check match results {% endblock %}</h1>
-<p>Please check if the results are correct. If not, press cancel.</p>
+<p>Please check if the results are correct. If they are not, press cancel.</p>
 <form method="post">
 <div className="inputBox">
   <div class = "flex">
@@ -10,7 +10,7 @@
            value="{{date}}" disabled/>
     <label for="time">Start time</label>
     <input type="time" name="time" id="time"
-           value="{{time}}" disabled/>
+           value="{{starttime}}" disabled/>
   </div>
   <div class = "flex">
     <label for="team_a">Team A</label>

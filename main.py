@@ -6,8 +6,9 @@ from werkzeug.exceptions import abort
 app = Flask(__name__)
 app.config["DEBUG"] = True
 app.config['SECRET_KEY'] = 'blah'
-dataHandler = DataHandler()
 
+dataHandler = DataHandler()
+dataHandler.export_db_to_csv('schedule')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -15,13 +16,16 @@ def index():
 
 @app.route('/tournament_overview', methods = ['GET'])
 def tournament():
-    conn = dataHandler.get_db_connection_schedule()
+    conn = dataHandler.get_db_connection('schedule')
     schedule = conn.execute('SELECT * FROM schedule').fetchall()
     conn.close()
     return render_template('tournament_overview.html', schedule = schedule)
 
 @app.route('/results', methods = ['GET', 'POST'])
 def results():
+    conn = dataHandler.get_db_connection('schedule')
+    cursor = conn.cursor()
+
     if (request.method == 'POST'):
         team_a = request.form['team_a']
         team_b = request.form['team_b']
@@ -29,6 +33,10 @@ def results():
         starttime = request.form['time']
         score_a = request.form['score_a']
         score_b = request.form['score_b']
+
+        # check if combination of data exists
+        cursor.execute('SELECT rowid FROM schedule WHERE teamA = ? AND teamB = ? AND starttime = ?', (team_a, team_b, starttime))
+        rows = cursor.fetchall()
 
         if not team_a:
             flash('Team A is required!')
@@ -42,6 +50,8 @@ def results():
             flash('Score of Team A is required!')
         elif not score_b:
             flash('Score of Team B is required!')
+        elif len(rows) == 0:
+            flash('Match does not exist!')
         else:
             return redirect(url_for('check_results', team_a=team_a, team_b=team_b, date=date,
                             starttime=starttime, score_a=score_a, score_b=score_b))
@@ -61,7 +71,7 @@ def check_results():
         return render_template('results.html')
 
     if (request.method == 'POST') and (request.form['submit'] == 'submit'):
-        conn = dataHandler.get_db_connection_schedule()
+        conn = dataHandler.get_db_connection('schedule')
         # find row where the score must be implemented
         sql = '''UPDATE schedule SET scoreTeamA = ?, scoreTeamB = ? WHERE teamA = ? AND teamB = ? AND starttime = ?'''
         cur = conn.cursor()
@@ -78,7 +88,7 @@ def check_results():
 
 @app.route('/request_overview', methods = ['GET'])
 def request_overview():
-    conn = dataHandler.get_db_connection_friendlies()
+    conn = dataHandler.get_db_connection('friendlies')
     friendly_requests = conn.execute('SELECT * FROM friendlies').fetchall()
     conn.close()
     return render_template('request_overview.html', friendlies = friendly_requests)
@@ -100,11 +110,12 @@ def request_friendly():
         if not time:
             flash('Time is required!')
         else:
-            conn = dataHandler.get_db_connection_friendlies()
+            conn = dataHandler.get_db_connection('friendlies')
             conn.execute('INSERT INTO friendlies (day, teamA, teamB, starttime, status) VALUES (?,?,?,?,?)',
                          (date, team_a, team_b, time, 'Pending'))
             conn.commit()
             conn.close()
+            dataHandler.export_db_to_csv('friendlies')
             return redirect(url_for('index'))
 
     return render_template('request_friendly.html')
