@@ -1,15 +1,16 @@
 from flask import Flask, render_template, request, url_for, flash, redirect
 import sqlite3
 from DataHandler import DataHandler
-from werkzeug.exceptions import abort
+from CommunicationHandler import CommunicationHandler
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
 app.config['SECRET_KEY'] = 'blah'
 
 dataHandler = DataHandler()
+commHandler = CommunicationHandler()
 # dataHandler.export_db_to_csv('schedule')
-dataHandler.export_csv_to_db('schedule')
+# dataHandler.export_csv_to_db('schedule')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -36,7 +37,8 @@ def results():
         score_b = request.form['score_b']
 
         # check if combination of data exists
-        cursor.execute('SELECT rowid FROM schedule WHERE teamA = ? AND teamB = ? AND starttime = ?', (team_a, team_b, starttime))
+        cursor.execute('SELECT rowid FROM schedule WHERE teamA = ? AND teamB = ? AND starttime = ? AND day = ?',
+                       (team_a, team_b, starttime, date))
         rows = cursor.fetchall()
 
         if not team_a:
@@ -74,18 +76,15 @@ def check_results():
     if (request.method == 'POST') and (request.form['submit'] == 'submit'):
         conn = dataHandler.get_db_connection('schedule')
         # find row where the score must be implemented
-        sql = '''UPDATE schedule SET scoreTeamA = ?, scoreTeamB = ? WHERE teamA = ? AND teamB = ? AND starttime = ?'''
         cur = conn.cursor()
-        cur.execute(sql, (score_a, score_b, team_a, team_b, starttime))
+        cur.execute('UPDATE schedule SET scoreTeamA = ?, scoreTeamB = ? WHERE teamA = ? AND teamB = ? AND starttime = ? AND day = ?',
+                    (score_a, score_b, team_a, team_b, starttime, date))
         conn.commit()
         conn.close()
         return redirect(url_for('tournament'))
 
     return render_template('check_results.html', team_a=team_a, team_b=team_b, date=date,
                             starttime=starttime, score_a=score_a, score_b=score_b)
-# def check_results(team_a, team_b, date, starttime, score_a, score_b):
-#     return render_template('check_results.html', team_a=team_a, team_b=team_b, date=date,
-#                             starttime=starttime, score_a=score_a, score_b=score_b)
 
 @app.route('/request_overview', methods = ['GET'])
 def request_overview():
@@ -117,7 +116,7 @@ def request_friendly():
             conn.commit()
             conn.close()
             dataHandler.export_db_to_csv('friendlies')
-            return redirect(url_for('index'))
+            return redirect(url_for('request_overview'))
 
     return render_template('request_friendly.html')
 

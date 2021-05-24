@@ -3,8 +3,9 @@
 {% block content %}
 <h1>{% block title %} Request a friendly match {% endblock %}</h1>
 <p> If you want to schedule a friendly match with another team, please fill in the form below. The scheduler software will check whether your slot is available. If this is the case, your friendly match will appear in the calendar. </p>
-
 <form method="post">
+
+<!--  Team A-->
   <div class="form-group">
     <label for="team_a">Team A</label>
     <input type="text" name="team_a" id="team_a"
@@ -12,6 +13,7 @@
            value="{{ request.form['team_a'] }}"/>
   </div>
 
+<!--  Team B-->
   <div class="form-group">
     <label for="team_b">Team B</label>
     <input type="text" name="team_b" id="team_b"
@@ -19,6 +21,7 @@
            value="{{ request.form['team_b'] }}"/>
   </div>
 
+<!--  Match date-->
   <div class="form-group">
     <label for="date">Match date</label>
     <input type="date" name="date" id="date"
@@ -27,13 +30,15 @@
            value="{{ request.form['date'] }}"/>
   </div>
 
+<!--  Match time -->
   <div class="form-group">
     <label for="time">Match time (UTC)</label>
     <input type="time" name="time" id="time"
-           class="form-control"
+           class="form-control" step="3600000"
            value="{{ request.form['time'] }}"/>
   </div>
 
+<!--  Submit button-->
   <div class="form-group">
         <button type="submit" class="btn btn-primary">Submit</button>
     </div>

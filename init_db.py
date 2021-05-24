@@ -8,11 +8,11 @@ with open('schedule.sql') as f:
 cur = connection.cursor()
 
 cur.execute("INSERT INTO schedule (day, teamA, teamB, starttime) VALUES (?,?,?,?)",
-            ('1', 'RoboTeam Twente', 'ER-Force', '14:00')
+            ('2021-06-15', 'RoboTeam Twente', 'ER-Force', '14:00')
             )
 
 cur.execute("INSERT INTO schedule (day, teamA, teamB, starttime) VALUES (?,?,?,?)",
-            ('2', 'TIGERs Mannheim', 'ER-Force', '14:00')
+            ('2021-06-16', 'TIGERs Mannheim', 'ER-Force', '14:00')
             )
 
 connection.commit()

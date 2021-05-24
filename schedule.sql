@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS schedule; -- drop already existing table
 
 CREATE TABLE schedule (
-    day int(255),
+    day varchar(255),
     field varchar(255),
     teamA varchar(255),
     teamB varchar(255),

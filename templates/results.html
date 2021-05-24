@@ -3,15 +3,19 @@
 <h1>{% block title %} Input match results {% endblock %}</h1>
 <form method="post">
 <div className="inputBox">
+
+<!--  Date & Time-->
   <div class = "flex">
     <label for="date">Date</label>
     <input type="date" name="date" id="date"
-           min="2021-06-14" max="2021-06-27"
+           min="2021-06-21" max="2021-06-27"
            value="{{ request.form['date'] }}"/>
     <label for="time">Start time</label>
-    <input type="time" name="time" id="time"
+    <input type="time" name="time" id="time" step="3600000"
            value="{{ request.form['time'] }}"/>
   </div>
+
+<!--  Team A-->
   <div class = "flex">
     <label for="team_a">Team A</label>
     <input type="text" name="team_a" id="team_a"
@@ -20,6 +24,8 @@
       <input type="number" name="score_a" id="score_a"
              value="{{ request.form['score_a'] }}"/>
     </div>
+
+<!--  Team B-->
     <div class = "flex">
       <label for="team_b">Team B</label>
       <input type="text" name="team_b" id="team_b"
