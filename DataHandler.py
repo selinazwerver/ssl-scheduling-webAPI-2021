@@ -20,4 +20,17 @@ class DataHandler():
             csv_writer = csv.writer(csv_file)
             csv_writer.writerows(cursor)
 
-
+    def export_csv_to_db(self, name):
+        filename = name + ".csv"
+        conn = self.get_db_connection(name)
+        cursor = conn.cursor()
+        cursor.execute('DELETE FROM ' + name) # delete contents to avoid doubles
+        with open(filename, 'r') as csv_file:
+            reader = csv.reader(csv_file)
+            data = next(reader)
+            query = 'insert into %s values ({0})' %(name)
+            query = query.format(','.join('?' * len(data)))
+            cursor.execute(query, data)
+            for data in reader:
+                cursor.execute(query, data)
+            conn.commit()

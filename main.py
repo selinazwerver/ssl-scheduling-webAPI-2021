@@ -8,7 +8,8 @@ app.config["DEBUG"] = True
 app.config['SECRET_KEY'] = 'blah'
 
 dataHandler = DataHandler()
-dataHandler.export_db_to_csv('schedule')
+# dataHandler.export_db_to_csv('schedule')
+dataHandler.export_csv_to_db('schedule')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -120,8 +121,11 @@ def request_friendly():
 
     return render_template('request_friendly.html')
 
-# @app.route('/tournament_schedule', methods=('GET'))
-# def tournament_schedule():
-#     return render_template('tournament_schedule.html')
+@app.route('/calendar', methods=['GET'])
+def calendar():
+    return render_template('calendar.html')
+
+
+
 
 app.run()
