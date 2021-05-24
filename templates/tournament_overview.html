@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{% block title %} Overview of matches {% endblock %}</h1>
+<table style="width:75%">
+    <tr>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Team A</th>
+        <th>Score Team A</th>
+        <th>Team B</th>
+        <th>Score Team B</th>
+  </tr>
+    {% for match in schedule %}
+        <tr>
+            <td>{{match['day']}}</td>
+            <td>{{match['starttime']}}</td>
+            <td>{{match['teamA']}}</td>
+            <td>{{match['scoreTeamA']}}</td>
+            <td>{{match['teamB']}}</td>
+            <td>{{match['scoreTeamB']}}</td>
+        </tr>
+    {% endfor %}
+</table>
+
+
+{% endblock %}

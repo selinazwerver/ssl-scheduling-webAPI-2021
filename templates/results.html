@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>{% block title %} Input match results {% endblock %}</h1>
+<form method="post">
+<div className="inputBox">
+  <div class = "flex">
+    <label for="date">Date</label>
+    <input type="date" name="date" id="date"
+           min="2021-06-14" max="2021-06-27"
+           value="{{ request.form['date'] }}"/>
+    <label for="time">Start time</label>
+    <input type="time" name="time" id="time"
+           value="{{ request.form['time'] }}"/>
+  </div>
+  <div class = "flex">
+    <label for="team_a">Team A</label>
+    <input type="text" name="team_a" id="team_a"
+           value="{{ request.form['team_a'] }}"/>
+      <label for="score_a">Score</label>
+      <input type="number" name="score_a" id="score_a"
+             value="{{ request.form['score_a'] }}"/>
+    </div>
+    <div class = "flex">
+      <label for="team_b">Team B</label>
+      <input type="text" name="team_b" id="team_b"
+             value="{{ request.form['team_b'] }}"/>
+      <label for="score_b">Score</label>
+      <input type="number" name="score_b" id="score_b"
+             value="{{ request.form['score_b'] }}"/>
+    </div>
+    <div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</div>
+</form>
+{% endblock %}

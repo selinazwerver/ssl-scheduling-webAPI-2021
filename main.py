@@ -1,0 +1,116 @@
+from flask import Flask, render_template, request, url_for, flash, redirect
+import sqlite3
+from DataHandler import DataHandler
+from werkzeug.exceptions import abort
+
+app = Flask(__name__)
+app.config["DEBUG"] = True
+app.config['SECRET_KEY'] = 'blah'
+dataHandler = DataHandler()
+
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    return render_template('home.html')
+
+@app.route('/tournament_overview', methods = ['GET'])
+def tournament():
+    conn = dataHandler.get_db_connection_schedule()
+    schedule = conn.execute('SELECT * FROM schedule').fetchall()
+    conn.close()
+    return render_template('tournament_overview.html', schedule = schedule)
+
+@app.route('/results', methods = ['GET', 'POST'])
+def results():
+    if (request.method == 'POST'):
+        team_a = request.form['team_a']
+        team_b = request.form['team_b']
+        date = request.form['date']
+        starttime = request.form['time']
+        score_a = request.form['score_a']
+        score_b = request.form['score_b']
+
+        if not team_a:
+            flash('Team A is required!')
+        elif not team_b:
+            flash('Team B is required!')
+        elif not date:
+            flash('Date is required!')
+        elif not starttime:
+            flash('Time is required!')
+        elif not score_a:
+            flash('Score of Team A is required!')
+        elif not score_b:
+            flash('Score of Team B is required!')
+        else:
+            return redirect(url_for('check_results', team_a=team_a, team_b=team_b, date=date,
+                            starttime=starttime, score_a=score_a, score_b=score_b))
+
+    return render_template('results.html')
+
+@app.route('/check_results', methods=['GET', 'POST'])
+def check_results():
+    team_a = request.args['team_a']
+    team_b = request.args['team_b']
+    date = request.args['date']
+    starttime = request.args['starttime']
+    score_a = request.args['score_a']
+    score_b = request.args['score_b']
+
+    if (request.method == 'POST') and (request.form['submit'] == 'cancel'):
+        return render_template('results.html')
+
+    if (request.method == 'POST') and (request.form['submit'] == 'submit'):
+        conn = dataHandler.get_db_connection_schedule()
+        # find row where the score must be implemented
+        sql = '''UPDATE schedule SET scoreTeamA = ?, scoreTeamB = ? WHERE teamA = ? AND teamB = ? AND starttime = ?'''
+        cur = conn.cursor()
+        cur.execute(sql, (score_a, score_b, team_a, team_b, starttime))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('tournament'))
+
+    return render_template('check_results.html', team_a=team_a, team_b=team_b, date=date,
+                            starttime=starttime, score_a=score_a, score_b=score_b)
+# def check_results(team_a, team_b, date, starttime, score_a, score_b):
+#     return render_template('check_results.html', team_a=team_a, team_b=team_b, date=date,
+#                             starttime=starttime, score_a=score_a, score_b=score_b)
+
+@app.route('/request_overview', methods = ['GET'])
+def request_overview():
+    conn = dataHandler.get_db_connection_friendlies()
+    friendly_requests = conn.execute('SELECT * FROM friendlies').fetchall()
+    conn.close()
+    return render_template('request_overview.html', friendlies = friendly_requests)
+
+@app.route('/request_friendly', methods = ['GET', 'POST'])
+def request_friendly():
+    if request.method == 'POST':
+        team_a = request.form['team_a']
+        team_b = request.form['team_b']
+        date = request.form['date']
+        time = request.form['time']
+
+        if not team_a:
+            flash('Team A is required!')
+        if not team_b:
+            flash('Team B is required!')
+        if not date:
+            flash('Date is required!')
+        if not time:
+            flash('Time is required!')
+        else:
+            conn = dataHandler.get_db_connection_friendlies()
+            conn.execute('INSERT INTO friendlies (day, teamA, teamB, starttime, status) VALUES (?,?,?,?,?)',
+                         (date, team_a, team_b, time, 'Pending'))
+            conn.commit()
+            conn.close()
+            return redirect(url_for('index'))
+
+    return render_template('request_friendly.html')
+
+# @app.route('/tournament_schedule', methods=('GET'))
+# def tournament_schedule():
+#     return render_template('tournament_schedule.html')
+
+app.run()

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<h1>{% block title %} Overview of friendly requests {% endblock %}</h1>
+<table style="width:50%">
+    <tr>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Team A</th>
+        <th>Team B</th>
+        <th>Status</th>
+  </tr>
+    {% for friendly in friendlies %}
+        <tr>
+            <td>{{friendly['day']}}</td>
+            <td>{{friendly['starttime']}}</td>
+            <td>{{friendly['teamA']}}</td>
+            <td>{{friendly['teamB']}}</td>
+            <td>{{friendly['status']}}</td>
+        </tr>
+    {% endfor %}
+</table>
+
+
+{% endblock %}

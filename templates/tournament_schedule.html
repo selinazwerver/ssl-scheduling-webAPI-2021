@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Tournament Schedule {% endblock %}</h1>
+    <p>{{ match['date'], match['time'] }}</p>
+    <p>{{ match['teamA'] - match['teamB'] }}</p>
+{% endblock %}
