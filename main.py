@@ -16,6 +16,8 @@ commHandler = CommunicationHandler()
 # commHandler.hour_to_date(38)
 # dataHandler.export_db_to_csv('schedule')
 # dataHandler.export_csv_to_db('schedule')
+dataHandler.export_db_to_csv('schedule')
+commHandler.convert_db_to_normal_time('friendlies')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():

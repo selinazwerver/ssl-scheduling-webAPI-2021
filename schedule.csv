@@ -1,2 +1,28 @@
-1,,RoboTeam Twente,ER-Force,14:00,,
-2,,TIGERs Mannheim,ER-Force,14:00,,
+0,RoboJackets, MRL, 13,14,,,0
+0,URoboRus, MRL, 14,15,,,0
+0,UBC Thunderbots, MRL, 15,16,,,0
+0,ITAndroids, URoboRus, 15,16,,,1
+0,URoboRus, RoboJackets, 16,17,,,0
+0,ITAndroids, UBC Thunderbots, 16,17,,,1
+0,RoboJackets, UBC Thunderbots, 17,18,,,0
+0,ITAndroids, MRL, 17,18,,,1
+0,URoboRus, UBC Thunderbots, 18,19,,,0
+0,ITAndroids, RoboJackets, 18,19,,,1
+0,KIKS, TIGERS, 7,8,,,0
+0,Omid, RoboCIn, 10,11,,,0
+0,Omid, KIKS, 11,12,,,0
+0,RoboCIn, TIGERS, 11,12,,,1
+0,RoboCIn, KIKS, 12,13,,,0
+0,Omid, TIGERS, 12,13,,,1
+0,Robo Team Twente, ER-Force, 7,8,,,1
+0,Tritons RCSC, RoboIME, 16,17,,,2
+0,Tritons RCSC, Robo Team Twente, 17,18,,,2
+0,RoboIME, ER-Force, 17,18,,,3
+0,RoboIME, Robo Team Twente, 18,19,,,2
+0,Tritons RCSC, ER-Force, 18,19,,,3
+0,SRC, Robo Dragons, 1,2,,,0
+0,Kgb Kubs, Robo Dragons, 5,6,,,0
+0,Kgb Kubs, RoboFEI, 12,13,,,2
+0,RoboFEI, Robo Dragons, 13,14,,,1
+0,Kgb Kubs, SRC, 13,14,,,2
+0,RoboFEI, SRC, 14,15,,,1
