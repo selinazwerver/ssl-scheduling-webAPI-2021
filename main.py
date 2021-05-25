@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, url_for, flash, redirect
 import sqlite3
+from datetime import datetime
 from DataHandler import DataHandler
 from CommunicationHandler import CommunicationHandler
 
@@ -9,6 +10,10 @@ app.config['SECRET_KEY'] = 'blah'
 
 dataHandler = DataHandler()
 commHandler = CommunicationHandler()
+
+# TestsS
+# commHandler.date_to_hour('2021-06-22 14:00')
+# commHandler.hour_to_date(38)
 # dataHandler.export_db_to_csv('schedule')
 # dataHandler.export_csv_to_db('schedule')
 
@@ -41,6 +46,7 @@ def results():
                        (team_a, team_b, starttime, date))
         rows = cursor.fetchall()
 
+        # send a warning if something is missing
         if not team_a:
             flash('Team A is required!')
         elif not team_b:
@@ -63,6 +69,7 @@ def results():
 
 @app.route('/check_results', methods=['GET', 'POST'])
 def check_results():
+    # parsing as function arguments was apparently not ok
     team_a = request.args['team_a']
     team_b = request.args['team_b']
     date = request.args['date']
@@ -70,9 +77,11 @@ def check_results():
     score_a = request.args['score_a']
     score_b = request.args['score_b']
 
+    # can be left out but is here for clarity; cancel puts you back to the form
     if (request.method == 'POST') and (request.form['submit'] == 'cancel'):
         return render_template('results.html')
 
+    # put the results in the database
     if (request.method == 'POST') and (request.form['submit'] == 'submit'):
         conn = dataHandler.get_db_connection('schedule')
         # find row where the score must be implemented
@@ -81,6 +90,7 @@ def check_results():
                     (score_a, score_b, team_a, team_b, starttime, date))
         conn.commit()
         conn.close()
+        # commHandler.send_match_results()
         return redirect(url_for('tournament'))
 
     return render_template('check_results.html', team_a=team_a, team_b=team_b, date=date,
@@ -111,8 +121,8 @@ def request_friendly():
             flash('Time is required!')
         else:
             conn = dataHandler.get_db_connection('friendlies')
-            conn.execute('INSERT INTO friendlies (day, teamA, teamB, starttime, status) VALUES (?,?,?,?,?)',
-                         (date, team_a, team_b, time, 'Pending'))
+            conn.execute('INSERT INTO friendlies (day, teamA, teamB, starttime, status, timestamp) VALUES (?,?,?,?,?,?)',
+                         (date, team_a, team_b, time, 'Pending', datetime.now()))
             conn.commit()
             conn.close()
             dataHandler.export_db_to_csv('friendlies')

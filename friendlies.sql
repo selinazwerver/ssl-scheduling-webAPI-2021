@@ -6,5 +6,6 @@ CREATE TABLE friendlies (
     teamA varchar(255),
     teamB varchar(255),
     starttime varchar(255),
-    status varchar(255)
+    status varchar(255),
+    timestamp varchar(255)
 )
