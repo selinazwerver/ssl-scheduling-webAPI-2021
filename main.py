@@ -18,6 +18,7 @@ commHandler = CommunicationHandler()
 # dataHandler.export_csv_to_db('schedule')
 # dataHandler.export_db_to_csv('schedule')
 # commHandler.convert_db_to_normal_time('schedule')
+commHandler.send_friendly_request()
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -135,8 +136,6 @@ def request_friendly():
 @app.route('/calendar', methods=['GET'])
 def calendar():
     return render_template('calendar.html')
-
-
 
 
 app.run()

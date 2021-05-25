@@ -2,6 +2,7 @@ import csv
 import math
 from datetime import datetime, timedelta
 from DataHandler import DataHandler
+# import thread
 
 class CommunicationHandler():
     def __init__(self):  
@@ -13,29 +14,8 @@ class CommunicationHandler():
             writer = csv.writer(file)
             writer.writerow(['code', 'hour'])
 
-    def date_to_hour(self, date):
-        # Assumes that we start on Monday!
-        timestamp = datetime.strptime(date, '%Y-%m-%d %H:%M')
-        hour = (timestamp.timetuple().tm_wday*24 + 24) - (24 - timestamp.timetuple().tm_hour)
-        return math.floor(int(hour)/24), hour
-
-    def hour_to_date(self, hour):
-        # Assumes that we start on Monday!
-        starttime =  datetime.strptime('2021-06-21 00:00', '%Y-%m-%d %H:%M')
-        date = starttime + timedelta(hours=hour)
-        return str(date)[0:10], str(date)[11:-3]
-
-    def field_number_to_letter(self, number):
-        if (number == 0): return 'A'
-        if (number == 1): return 'B'
-        if (number == 2): return 'C'
-        if (number == 3): return 'D'
-
-    def field_letter_to_number(self, letter):
-        if (letter == 'A'): return 1
-        if (letter == 'B'): return 2
-        if (letter == 'C'): return 3
-        if (letter == 'D'): return 4
+        # Start thread for sending the requests
+        # thread.start_new_thread(self.find_oldest_friendly_request(), ("Thread-1", 2,))
 
     def convert_db_functional_to_readable(self, name):
         # convert the hours in the database to a date/time format
@@ -46,8 +26,8 @@ class CommunicationHandler():
             # print(row['day'], row['teamA'], row['teamB'], row['starttime'])
             if ((type(row['day']) == int) or (len(row['day']) < 3)): # do not update if it's already ok
                 hour = row['starttime']
-                date, time = self.hour_to_date(int(hour))
-                field = self.field_number_to_letter(row['field'])
+                date, time = self.dataHandler.hour_to_date(int(hour))
+                field = self.dataHandler.field_number_to_letter(row['field'])
                 cursor2.execute('UPDATE %s SET day = ?, starttime = ?, field = ? WHERE day = ? AND teamA = ? AND teamB = ? AND starttime = ?' %(name), 
                 (date, time, field, row['day'], row['teamA'], row['teamB'], row['starttime']))
         conn.commit()
@@ -61,36 +41,34 @@ class CommunicationHandler():
             if (len(row['day']) > 2): # do not update if it's already ok
                 date = row['day']
                 time = row['starttime']
-                field = self.field_letter_to_number(row['field'])
-                day, hour = self.date_to_hour(date + ' ' + time)       
+                field = self.dataHandler.field_letter_to_number(row['field'])
+                day, hour = self.dataHandler.date_to_hour(date + ' ' + time)
                 cursor2.execute('UPDATE %s SET day = ?, starttime = ?, field = ? WHERE day = ? AND teamA = ? AND teamB = ? AND starttime = ?' %(name), 
                 (date, time, field, row['day'], row['teamA'], row['teamB'], row['starttime']))
         conn.commit()
         conn.close()
 
-    def find_oldest_request(self):
+    def find_oldest_friendly_request(self):
         # establish connection
-        # conn = ....
-        # cursor = conn.cursor()
-        # cursor.execute('SELECT min(timestamp) FROM friendlies WHERE status = Pending')
-        # rows = cursor.fetchall()
-        # conn.commit()
-        # conn.close()
+        conn = self.dataHandler.get_db_connection('friendlies')
+        cursor = conn.cursor()
+        # cursor.execute('SELECT * FROM friendlies')
+        cursor.execute('SELECT * FROM friendlies WHERE timestamp = (SELECT MIN(timestamp) FROM friendlies)')
+        rows = cursor.fetchall()
+        conn.commit()
+        conn.close()
 
-        # if len(rows == 0):
-            # there are no requests
-
-
-        # rows to excel sheet
-        # send request
-        return
+        return rows
 
     # Send friendly request
     # - Turn new friendly request to csv
     #
     def send_friendly_request(self):
-        if (self.send_friendly_request == False):
-            do_stuff = 1 
+        row = self.find_oldest_friendly_request()
+        self.dataHandler.export_friendly_to_csv(row)
+
+        # if (self.send_friendly_request == False):
+        #     do_stuff = 1
 
     # Receive friendly result
     def receive_friendly_request(self):
