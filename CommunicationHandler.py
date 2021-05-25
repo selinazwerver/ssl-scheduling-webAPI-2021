@@ -25,21 +25,35 @@ class CommunicationHandler():
         date = starttime + timedelta(hours=hour)
         return str(date)[0:10], str(date)[11:-3]
 
-    def convert_db_to_normal_time(self, name):
+    def field_number_to_letter(self, number):
+        if (number == 0): return 'A'
+        if (number == 1): return 'B'
+        if (number == 2): return 'C'
+        if (number == 3): return 'D'
+
+    def field_letter_to_number(self, letter):
+        if (letter == 'A'): return 1
+        if (letter == 'B'): return 2
+        if (letter == 'C'): return 3
+        if (letter == 'D'): return 4
+
+    def convert_db_functional_to_readable(self, name):
         # convert the hours in the database to a date/time format
         conn = self.dataHandler.get_db_connection(name)
         cursor = conn.cursor()
         cursor2 = conn.cursor()
         for row in cursor.execute('SELECT * FROM ' + name):
-            if (type(row['day']) == int): # do not update if it's already ok
+            # print(row['day'], row['teamA'], row['teamB'], row['starttime'])
+            if ((type(row['day']) == int) or (len(row['day']) < 3)): # do not update if it's already ok
                 hour = row['starttime']
                 date, time = self.hour_to_date(int(hour))
-                print(date, time)            
-                cursor2.execute('UPDATE %s SET day = ?, starttime = ?' %(name), (date, time))
+                field = self.field_number_to_letter(row['field'])
+                cursor2.execute('UPDATE %s SET day = ?, starttime = ?, field = ? WHERE day = ? AND teamA = ? AND teamB = ? AND starttime = ?' %(name), 
+                (date, time, field, row['day'], row['teamA'], row['teamB'], row['starttime']))
         conn.commit()
         conn.close()
 
-    def convert_db_to_hours_time(self,name):
+    def convert_db_readable_to_functional(self, name):
         conn = self.dataHandler.get_db_connection(name)
         cursor = conn.cursor()
         cursor2 = conn.cursor()
@@ -47,9 +61,10 @@ class CommunicationHandler():
             if (len(row['day']) > 2): # do not update if it's already ok
                 date = row['day']
                 time = row['starttime']
-                day, hour = self.date_to_hour(date + ' ' + time)
-                print(date, time)            
-                cursor2.execute('UPDATE %s SET day = ?, starttime = ?' %(name), (day, hour))
+                field = self.field_letter_to_number(row['field'])
+                day, hour = self.date_to_hour(date + ' ' + time)       
+                cursor2.execute('UPDATE %s SET day = ?, starttime = ?, field = ? WHERE day = ? AND teamA = ? AND teamB = ? AND starttime = ?' %(name), 
+                (date, time, field, row['day'], row['teamA'], row['teamB'], row['starttime']))
         conn.commit()
         conn.close()
 
