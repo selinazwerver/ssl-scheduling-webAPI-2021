@@ -137,10 +137,5 @@ def request_friendly():
             return redirect(url_for('request_overview'))
 
     return render_template('request_friendly.html')
-
-@app.route('/calendar', methods=['GET'])
-def calendar():
-    return render_template('calendar.html')
-
-
+    
 app.run()
