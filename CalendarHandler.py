@@ -1,7 +1,6 @@
 from __future__ import print_function
 from datetime import datetime, timedelta
 import os.path
-from re import L
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
@@ -41,18 +40,18 @@ class CalendarHandler():
         elif field == 'D':
             return 'c_c1n27rok56cg74fauicqkma0uc@group.calendar.google.com'
 
-    def write_event_to_calendar(self, request, type):
-        startTime = request['day'] + 'T' + request['starttime'] + ':00-00:00'
+    def write_event_to_calendar(self, teamA, teamB, date, time, field, type):
+        startTime = date + 'T' + time + ':00-00:00'
         endTime = datetime.strftime(datetime.strptime(startTime, '%Y-%m-%dT%H:%M:%S%z') + timedelta(hours=1), '%Y-%m-%dT%H:%M:%S%z')
         
         if type == 'friendly':
-            title = 'Friendly Match %s - %s' %(request['teamA'], request['teamB'])
+            title = 'Friendly Match %s - %s' %(teamA, teamB)
         elif type == 'match':
-            title = '%s - %s' %(request['teamA'], request['teamB'])
+            title = '%s - %s' %(teamB, teamB)
 
         event = {
             'summary': title,
-            'location': request['field'],
+            'location': field,
             'description': title,
             'start': {
                 'dateTime': startTime,
@@ -64,4 +63,4 @@ class CalendarHandler():
             },
         }
 
-        event = self.service.events().insert(calendarId=self.field_to_calendar_id(request['field']), body=event).execute()
+        self.service.events().insert(calendarId=self.field_to_calendar_id(request['field']), body=event).execute()

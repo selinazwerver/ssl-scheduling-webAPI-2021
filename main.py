@@ -3,7 +3,7 @@ import sqlite3
 from datetime import datetime
 from DataHandler import DataHandler
 from CommunicationHandler import CommunicationHandler
-from CalendarHandler import CalendarHandler
+# from CalendarHandler import CalendarHandler
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
@@ -11,9 +11,9 @@ app.config['SECRET_KEY'] = 'blah'
 
 dataHandler = DataHandler()
 commHandler = CommunicationHandler()
-calHandler = CalendarHandler()
+# calHandler = CalendarHandler()
 
-# TestsS
+# Tests
 # commHandler.date_to_hour('2021-06-22 14:00')
 # commHandler.hour_to_date(38)
 # dataHandler.export_db_to_csv('schedule')
@@ -22,6 +22,9 @@ calHandler = CalendarHandler()
 # commHandler.convert_db_to_normal_time('schedule')
 # commHandler.send_friendly_request()
 # calHandler.write_event_to_calendar(field='A')
+# commHandler.receive_tournament_update()
+dataHandler.schedule_csv_to_db(name='schedule', removedb=True)
+# dataHandler.update_tournament_db()
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -96,7 +99,7 @@ def check_results():
                     (score_a, score_b, team_a, team_b, starttime, date))
         conn.commit()
         conn.close()
-        # commHandler.send_match_results()
+        commHandler.new_match_results = True
         return redirect(url_for('tournament'))
 
     return render_template('check_results.html', team_a=team_a, team_b=team_b, date=date,

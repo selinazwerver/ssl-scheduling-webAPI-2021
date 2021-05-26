@@ -4,56 +4,33 @@ from datetime import datetime, timedelta
 from os import popen
 from re import sub
 import subprocess
-
-from googleapiclient.discovery import ResourceMethodParameters
 from DataHandler import DataHandler
-from CalendarHandler import CalendarHandler
-# import thread
+# from CalendarHandler import CalendarHandler
+import threading
 
 class CommunicationHandler():
     def __init__(self):  
         # self.sending_friendly_request = False
         self.dataHandler = DataHandler()
-        self.calHandler = CalendarHandler()
+        # self.calHandler = CalendarHandler()
+
+        self.new_match_results = False # true if new match results are in
         
         # Make csv files for sending/receiving friendly requests
         with open('friendly_request.csv', 'w', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(['code', 'hour'])
 
-        # Start thread for sending the requests
-        # thread.start_new_thread(self.find_oldest_friendly_request(), ("Thread-1", 2,))
+    def update(self): # functions that need to be checked regularly
+        print('update!')
+        self.send_friendly_request()
+        self.receive_tournament_update()
 
-    def convert_db_functional_to_readable(self, name):
-        # convert the hours in the database to a date/time format
-        conn = self.dataHandler.get_db_connection(name)
-        cursor = conn.cursor()
-        cursor2 = conn.cursor()
-        for row in cursor.execute('SELECT * FROM ' + name):
-            # print(row['day'], row['teamA'], row['teamB'], row['starttime'])
-            if ((type(row['day']) == int) or (len(row['day']) < 3)): # do not update if it's already ok
-                hour = row['starttime']
-                date, time = self.dataHandler.hour_to_date(int(hour))
-                field = self.dataHandler.field_number_to_letter(row['field'])
-                cursor2.execute('UPDATE %s SET day = ?, starttime = ?, field = ? WHERE day = ? AND teamA = ? AND teamB = ? AND starttime = ?' %(name), 
-                (date, time, field, row['day'], row['teamA'], row['teamB'], row['starttime']))
-        conn.commit()
-        conn.close()
+        if self.new_match_results:
+            self.new_match_results = False
+            # run some binary I guess
 
-    def convert_db_readable_to_functional(self, name):
-        conn = self.dataHandler.get_db_connection(name)
-        cursor = conn.cursor()
-        cursor2 = conn.cursor()
-        for row in cursor.execute('SELECT * FROM ' + name):
-            if (len(row['day']) > 2): # do not update if it's already ok
-                date = row['day']
-                time = row['starttime']
-                field = self.dataHandler.field_letter_to_number(row['field'])
-                day, hour = self.dataHandler.date_to_hour(date + ' ' + time)
-                cursor2.execute('UPDATE %s SET day = ?, starttime = ?, field = ? WHERE day = ? AND teamA = ? AND teamB = ? AND starttime = ?' %(name), 
-                (date, time, field, row['day'], row['teamA'], row['teamB'], row['starttime']))
-        conn.commit()
-        conn.close()
+
 
     def find_oldest_friendly_request(self):
         conn = self.dataHandler.get_db_connection('friendlies')
@@ -65,14 +42,11 @@ class CommunicationHandler():
 
         if (len(request) == 0):
             return 0
-        elif (request['timestamp'] > datetime.now()):
+        elif (datetime.strptime(request['timestamp'], '%Y-%m-%d %H:%M:%S.%f') > datetime.now()):
             return 0
         else:
             return request
 
-    # Send friendly request
-    # - Turn new friendly request to csv
-    #
     def send_friendly_request(self):
         request = self.find_oldest_friendly_request()
 
@@ -80,12 +54,14 @@ class CommunicationHandler():
             return
         else:
             self.dataHandler.export_friendly_to_csv(request)
-            result, newtime = 0, 0 # replace by binary call when we have that
+            result, newtime, field = 0, 0, 0 # replace by binary call when we have that
             # popen = subprocess.Popen('name -c firendly_request.csv'.split(), stdout=subprocess.PIPE)
             # popen.wait()
-            # result, newtime = popen.stdout.read()
+            # result, newtime, field = popen.stdout.read()
             if result == 'accepted': # request is accepted, update calendar and database
-                self.calHandler.write_event_to_calendar(request=request, type='friendly')
+                self.calHandler.write_event_to_calendar(teamA=request['teamA'], teamB=request['teamB'],
+                                                        date=request['day'], time=request['starttime'],
+                                                        field=field, type='friendly')
                 conn = self.dataHandler.get_db_connection('friendlies')
                 cursor = conn.cursor()
                 cursor.execute('UPDATE friendlies SET status = ? WHERE status = ? AND day = ? AND teamA = ? AND teamB = ? AND starttime = ?', 
@@ -114,11 +90,6 @@ class CommunicationHandler():
         # temp!
         # self.calHandler.write_event_to_calendar(request)
 
-    # Send match results
-    def send_match_results(self):
-        # export results to csv
-        # call some function to send csv to scheduler
-        return
-
     def receive_tournament_update(self):
+        self.dataHandler.update_tournament_db()
         return
