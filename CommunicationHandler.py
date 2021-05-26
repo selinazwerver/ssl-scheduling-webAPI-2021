@@ -1,6 +1,11 @@
 import csv
 import math
 from datetime import datetime, timedelta
+from os import popen
+from re import sub
+import subprocess
+
+from googleapiclient.discovery import ResourceMethodParameters
 from DataHandler import DataHandler
 from CalendarHandler import CalendarHandler
 # import thread
@@ -51,39 +56,69 @@ class CommunicationHandler():
         conn.close()
 
     def find_oldest_friendly_request(self):
-        # establish connection
         conn = self.dataHandler.get_db_connection('friendlies')
         cursor = conn.cursor()
-        # cursor.execute('SELECT * FROM friendlies')
         cursor.execute('SELECT * FROM friendlies WHERE timestamp = (SELECT MIN(timestamp) FROM friendlies)')
-        rows = cursor.fetchone()
+        request = cursor.fetchone()
         conn.commit()
         conn.close()
 
-        return rows
+        if (len(request) == 0):
+            return 0
+        elif (request['timestamp'] > datetime.now()):
+            return 0
+        else:
+            return request
 
     # Send friendly request
     # - Turn new friendly request to csv
     #
     def send_friendly_request(self):
-        row = self.find_oldest_friendly_request()
-        self.dataHandler.export_friendly_to_csv(row)
+        request = self.find_oldest_friendly_request()
+
+        if request == 0:
+            return
+        else:
+            self.dataHandler.export_friendly_to_csv(request)
+            result, newtime = 0, 0 # replace by binary call when we have that
+            # popen = subprocess.Popen('name -c firendly_request.csv'.split(), stdout=subprocess.PIPE)
+            # popen.wait()
+            # result, newtime = popen.stdout.read()
+            if result == 'accepted': # request is accepted, update calendar and database
+                self.calHandler.write_event_to_calendar(request=request, type='friendly')
+                conn = self.dataHandler.get_db_connection('friendlies')
+                cursor = conn.cursor()
+                cursor.execute('UPDATE friendlies SET status = ? WHERE status = ? AND day = ? AND teamA = ? AND teamB = ? AND starttime = ?', 
+                ('Accepted', 'Pending', request['day'], request['teamA'], request['teamB'], request['starttime']))
+                conn.commit()
+                conn.close()
+                return
+            elif result == 'denied': # request is denied, update only database
+                conn = self.dataHandler.get_db_connection('friendlies')
+                cursor = conn.cursor()
+                cursor.execute('UPDATE friendlies SET status = ? WHERE status = ? AND day = ? AND teamA = ? AND teamB = ? AND starttime = ?', 
+                ('Denied', 'Pending', request['day'], request['teamA'], request['teamB'], request['starttime']))
+                conn.commit()
+                conn.close()
+                return
+            elif result == 'try again': # update timestamp to new time
+                newday, newtime = self.dataHandler.hour_to_date(newtime)
+                conn = self.dataHandler.get_db_connection('friendlies')
+                cursor = conn.cursor()
+                cursor.execute('UPDATE friendlies SET timestamp = ? WHERE status = ? AND day = ? AND teamA = ? AND teamB = ? AND starttime = ?', 
+                (newday + ' ' + newtime, 'Pending', request['day'], request['teamA'], request['teamB'], request['starttime']))
+                conn.commit()
+                conn.close()
+                return
 
         # temp!
-        self.calHandler.write_event_to_calendar(row)
-
-        # if (self.send_friendly_request == False):
-        #     do_stuff = 1
-
-    # Receive friendly result
-    def receive_friendly_request(self):
-        return
-        # self.send_friendly_request = True
-        # get result from check from csv
-        # update database with the new status
+        # self.calHandler.write_event_to_calendar(request)
 
     # Send match results
     def send_match_results(self):
         # export results to csv
         # call some function to send csv to scheduler
+        return
+
+    def receive_tournament_update(self):
         return
