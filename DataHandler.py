@@ -47,12 +47,11 @@ class DataHandler():
             writer.writerows(cursor)
 
     def export_friendly_to_csv(self, request):
-        filename =  'friendly_request.csv'
+        filename = 'friendly_request.csv'
         with open(filename, 'w', newline='') as csv_file:
             writer = csv.writer(csv_file)
-            for row in request:
-                day, hour = self.date_to_hour(row['day'] + ' ' + row['starttime'])
-                writer.writerow([day, hour])
+            day, hour = self.date_to_hour(request['day'] + ' ' + request['starttime'])
+            writer.writerow([day, hour])
 
     def export_csv_to_db(self, name):
         filename = name + ".csv"

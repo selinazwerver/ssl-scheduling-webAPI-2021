@@ -3,6 +3,7 @@ import sqlite3
 from datetime import datetime
 from DataHandler import DataHandler
 from CommunicationHandler import CommunicationHandler
+from CalendarHandler import CalendarHandler
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
@@ -10,6 +11,7 @@ app.config['SECRET_KEY'] = 'blah'
 
 dataHandler = DataHandler()
 commHandler = CommunicationHandler()
+calHandler = CalendarHandler()
 
 # TestsS
 # commHandler.date_to_hour('2021-06-22 14:00')
@@ -18,7 +20,8 @@ commHandler = CommunicationHandler()
 # dataHandler.export_csv_to_db('schedule')
 # dataHandler.export_db_to_csv('schedule')
 # commHandler.convert_db_to_normal_time('schedule')
-commHandler.send_friendly_request()
+# commHandler.send_friendly_request()
+# calHandler.write_event_to_calendar(field='A')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -128,7 +131,9 @@ def request_friendly():
                          (date, team_a, team_b, time, 'Pending', datetime.now()))
             conn.commit()
             conn.close()
-            dataHandler.export_db_to_csv('friendlies')
+
+            # commHandler.send_friendly_request()
+            # dataHandler.export_db_to_csv('friendlies')
             return redirect(url_for('request_overview'))
 
     return render_template('request_friendly.html')

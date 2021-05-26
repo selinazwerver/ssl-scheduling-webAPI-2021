@@ -2,12 +2,14 @@ import csv
 import math
 from datetime import datetime, timedelta
 from DataHandler import DataHandler
+from CalendarHandler import CalendarHandler
 # import thread
 
 class CommunicationHandler():
     def __init__(self):  
-        self.sending_friendly_request = False
+        # self.sending_friendly_request = False
         self.dataHandler = DataHandler()
+        self.calHandler = CalendarHandler()
         
         # Make csv files for sending/receiving friendly requests
         with open('friendly_request.csv', 'w', newline='') as file:
@@ -54,7 +56,7 @@ class CommunicationHandler():
         cursor = conn.cursor()
         # cursor.execute('SELECT * FROM friendlies')
         cursor.execute('SELECT * FROM friendlies WHERE timestamp = (SELECT MIN(timestamp) FROM friendlies)')
-        rows = cursor.fetchall()
+        rows = cursor.fetchone()
         conn.commit()
         conn.close()
 
@@ -67,12 +69,16 @@ class CommunicationHandler():
         row = self.find_oldest_friendly_request()
         self.dataHandler.export_friendly_to_csv(row)
 
+        # temp!
+        self.calHandler.write_event_to_calendar(row)
+
         # if (self.send_friendly_request == False):
         #     do_stuff = 1
 
     # Receive friendly result
     def receive_friendly_request(self):
-        self.send_friendly_request = True
+        return
+        # self.send_friendly_request = True
         # get result from check from csv
         # update database with the new status
 
