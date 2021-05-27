@@ -7,7 +7,7 @@ import threading
 # from CalendarHandler import CalendarHandler
 
 app = Flask(__name__)
-app.config["DEBUG"] = False
+app.config["DEBUG"] = True
 app.config['SECRET_KEY'] = 'blah'
 
 dataHandler = DataHandler()
@@ -17,22 +17,22 @@ commHandler = CommunicationHandler()
 # init database
 dataHandler.schedule_csv_to_db(name='schedule', removedb=True)
 
-# Tests
-# commHandler.date_to_hour('2021-06-22 14:00')
-# commHandler.hour_to_date(38)
-# dataHandler.export_db_to_csv('schedule')
-# dataHandler.export_csv_to_db('schedule')
-# dataHandler.export_db_to_csv('schedule')
-# commHandler.convert_db_to_normal_time('schedule')
-# commHandler.send_friendly_request()
-# calHandler.write_event_to_calendar(field='A')
-# commHandler.receive_tournament_update()
-# dataHandler.update_tournament_db()
 
+
+
+###############################################################
+############################ HOME #############################
+###############################################################
 @app.route('/', methods=['GET', 'POST'])
 def index():
     return render_template('home.html')
 
+
+
+
+###############################################################
+######################### TOURNAMENT ##########################
+###############################################################
 @app.route('/tournament_overview', methods = ['GET'])
 def tournament():
     conn = dataHandler.get_db_connection('schedule')
@@ -40,6 +40,12 @@ def tournament():
     conn.close()
     return render_template('tournament_overview.html', schedule=schedule)
 
+
+
+
+###############################################################
+########################### RESULTS ###########################
+###############################################################
 @app.route('/results', methods = ['GET', 'POST'])
 def results():
     conn = dataHandler.get_db_connection('schedule')
@@ -108,6 +114,59 @@ def check_results():
     return render_template('check_results.html', team_a=team_a, team_b=team_b, date=date,
                             starttime=starttime, score_a=score_a, score_b=score_b)
 
+
+
+
+###############################################################
+######################### FRIENDLIES ##########################
+###############################################################
+@app.route('/request_friendly', methods = ['GET', 'POST'])
+def request_friendly():
+    if request.method == 'POST':
+        team_a = request.form['team_a']
+        team_b = request.form['team_b']
+        date = request.form['date']
+        starttime = request.form['time']
+
+        # send a warning if something is missing
+        if not team_a:
+            flash('Team A is required!')
+        if not team_b:
+            flash('Team B is required!')
+        if not date:
+            flash('Date is required!')
+        if not starttime:
+            flash('Time is required!')
+        else:
+            return redirect(url_for('check_friendly', team_a=team_a, team_b=team_b, date=date, starttime=starttime))
+
+    return render_template('request_friendly.html')
+
+@app.route('/check_friendly', methods=['GET', 'POST'])
+def check_friendly():
+    team_a = request.args['team_a']
+    team_b = request.args['team_b']
+    date = request.args['date']
+    starttime = request.args['starttime']
+
+    # can be left out but is here for clarity; cancel puts you back to the form
+    if (request.method == 'POST') and (request.form['submit'] == 'cancel'):
+        return render_template('request_friendly.html')
+
+    # put the results in the database
+    if (request.method == 'POST') and (request.form['submit'] == 'submit'):
+        # insert request in friendly database
+        conn = dataHandler.get_db_connection('friendlies')
+        cur = conn.cursor()
+        conn.execute('INSERT INTO friendlies (day, teamA, teamB, starttime, status, timestamp) VALUES (?,?,?,?,?,?)',
+                         (date, team_a, team_b, starttime, 'Pending', datetime.now()))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('request_overview'))
+
+    return render_template('check_friendly.html', team_a=team_a, team_b=team_b, date=date,
+                            starttime=starttime)
+
 @app.route('/request_overview', methods = ['GET'])
 def request_overview():
     conn = dataHandler.get_db_connection('friendlies')
@@ -115,37 +174,12 @@ def request_overview():
     conn.close()
     return render_template('request_overview.html', friendlies = friendly_requests)
 
-@app.route('/request_friendly', methods = ['GET', 'POST'])
-def request_friendly():
-    if request.method == 'POST':
-        team_a = request.form['team_a']
-        team_b = request.form['team_b']
-        date = request.form['date']
-        time = request.form['time']
 
-        if not team_a:
-            flash('Team A is required!')
-        if not team_b:
-            flash('Team B is required!')
-        if not date:
-            flash('Date is required!')
-        if not time:
-            flash('Time is required!')
-        else:
-            conn = dataHandler.get_db_connection('friendlies')
-            conn.execute('INSERT INTO friendlies (day, teamA, teamB, starttime, status, timestamp) VALUES (?,?,?,?,?,?)',
-                         (date, team_a, team_b, time, 'Pending', datetime.now()))
-            conn.commit()
-            conn.close()
 
-            # commHandler.send_friendly_request()
-            # dataHandler.export_db_to_csv('friendlies')
-            return redirect(url_for('request_overview'))
 
-    return render_template('request_friendly.html')
-    
-
-# init thread to check for updates
+###############################################################
+############################# RUN #############################
+###############################################################
 update_thread = threading.Thread(target=commHandler.update)
 update_thread.start()
 

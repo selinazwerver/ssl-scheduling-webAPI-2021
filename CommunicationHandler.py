@@ -4,6 +4,9 @@ from datetime import datetime, timedelta
 from os import popen
 from re import sub
 import subprocess
+import threading
+
+from googleapiclient.http import RequestMockBuilder
 from DataHandler import DataHandler
 from CalendarHandler import CalendarHandler
 import time
@@ -12,6 +15,7 @@ class CommunicationHandler():
     def __init__(self):  
         self.dataHandler = DataHandler()
         self.calHandler = CalendarHandler()
+        self.lock = threading.Lock()
 
         self.new_match_results = False # true if new match results are in
         
@@ -22,28 +26,28 @@ class CommunicationHandler():
 
     def update(self): # functions that need to be checked regularly
         while True:
-            print('update!')
-            # self.send_friendly_request()
-            # self.receive_tournament_update()
+            self.send_friendly_request()
+            self.receive_tournament_update()
 
             if self.new_match_results:
+                print('[CommHandler][update] Sending new match results')
                 self.new_match_results = False
+                self.lock.acquire()
                 # run some binary I guess
-                print('New match results inserted')
+                self.lock.release()
+                print('[CommHandler][update] Done sending new match results')
 
-            time.sleep(5)
-
-
+            time.sleep(5) # change to the time we want
 
     def find_oldest_friendly_request(self):
         conn = self.dataHandler.get_db_connection('friendlies')
         cursor = conn.cursor()
-        cursor.execute('SELECT * FROM friendlies WHERE timestamp = (SELECT MIN(timestamp) FROM friendlies)')
+        cursor.execute('SELECT * FROM friendlies WHERE status = ? GROUP BY timestamp HAVING MIN(timestamp)', ('Pending',))
         request = cursor.fetchone()
         conn.commit()
         conn.close()
 
-        if (len(request) == 0):
+        if request is None: # no requests
             return 0
         elif (datetime.strptime(request['timestamp'], '%Y-%m-%d %H:%M:%S.%f') > datetime.now()):
             return 0
@@ -56,12 +60,20 @@ class CommunicationHandler():
         if request == 0:
             return
         else:
-            self.dataHandler.export_friendly_to_csv(request)
-            result, newtime, field = 0, 0, 0 # replace by binary call when we have that
+            # self.dataHandler.export_friendly_to_csv(request)
+            # export friendly date to hour
+            day, hour = self.dataHandler.date_to_hour(request['day'] + ' ' + request['starttime'])
+            print('[CommHandler][send_friendly_request] Sending new friendly request')
+            self.lock.acquire()
+            result, newtime, field = 'accepted', 0, 0 # replace by binary call when we have that
             # popen = subprocess.Popen('name -c firendly_request.csv'.split(), stdout=subprocess.PIPE)
             # popen.wait()
             # result, newtime, field = popen.stdout.read()
+            self.lock.release()
+            print('[CommHandler][send_friendly_request] Friendly request is:', result)
+
             if result == 'accepted': # request is accepted, update calendar and database
+                field = self.dataHandler.field_number_to_letter(field)
                 self.calHandler.write_event_to_calendar(teamA=request['teamA'], teamB=request['teamB'],
                                                         date=request['day'], time=request['starttime'],
                                                         field=field, type='friendly')
