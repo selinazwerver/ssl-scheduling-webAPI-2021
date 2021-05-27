@@ -6,7 +6,7 @@ from re import sub
 import subprocess
 from DataHandler import DataHandler
 from CalendarHandler import CalendarHandler
-import threading
+import time
 
 class CommunicationHandler():
     def __init__(self):  
@@ -21,13 +21,17 @@ class CommunicationHandler():
             writer.writerow(['code', 'hour'])
 
     def update(self): # functions that need to be checked regularly
-        print('update!')
-        self.send_friendly_request()
-        self.receive_tournament_update()
+        while True:
+            print('update!')
+            # self.send_friendly_request()
+            # self.receive_tournament_update()
 
-        if self.new_match_results:
-            self.new_match_results = False
-            # run some binary I guess
+            if self.new_match_results:
+                self.new_match_results = False
+                # run some binary I guess
+                print('New match results inserted')
+
+            time.sleep(5)
 
 
 

@@ -3,6 +3,7 @@ import sqlite3
 from datetime import datetime
 from DataHandler import DataHandler
 from CommunicationHandler import CommunicationHandler
+import threading
 # from CalendarHandler import CalendarHandler
 
 app = Flask(__name__)
@@ -143,4 +144,10 @@ def request_friendly():
 
     return render_template('request_friendly.html')
     
+
+# init thread to check for updates
+update_thread = threading.Thread(target=commHandler.update)
+update_thread.start()
+
 app.run()
+update_thread.join()
