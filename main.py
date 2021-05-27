@@ -13,6 +13,9 @@ dataHandler = DataHandler()
 commHandler = CommunicationHandler()
 # calHandler = CalendarHandler()
 
+# init database
+dataHandler.schedule_csv_to_db(name='schedule', removedb=True)
+
 # Tests
 # commHandler.date_to_hour('2021-06-22 14:00')
 # commHandler.hour_to_date(38)
@@ -23,7 +26,6 @@ commHandler = CommunicationHandler()
 # commHandler.send_friendly_request()
 # calHandler.write_event_to_calendar(field='A')
 # commHandler.receive_tournament_update()
-dataHandler.schedule_csv_to_db(name='schedule', removedb=True)
 # dataHandler.update_tournament_db()
 
 @app.route('/', methods=['GET', 'POST'])
@@ -35,7 +37,7 @@ def tournament():
     conn = dataHandler.get_db_connection('schedule')
     schedule = conn.execute('SELECT * FROM schedule').fetchall()
     conn.close()
-    return render_template('tournament_overview.html', schedule = schedule)
+    return render_template('tournament_overview.html', schedule=schedule)
 
 @app.route('/results', methods = ['GET', 'POST'])
 def results():
@@ -51,7 +53,7 @@ def results():
         score_b = request.form['score_b']
 
         # check if combination of data exists
-        cursor.execute('SELECT rowid FROM schedule WHERE teamA = ? AND teamB = ? AND starttime = ? AND day = ?',
+        cursor.execute('SELECT rowid FROM schedule WHERE teamA = ? AND teamB = ? AND starttime = ? AND day = ? AND scoreTeamA IS NULL AND scoreTeamB IS NULL',
                        (team_a, team_b, starttime, date))
         rows = cursor.fetchall()
 
@@ -69,7 +71,7 @@ def results():
         elif not score_b:
             flash('Score of Team B is required!')
         elif len(rows) == 0:
-            flash('Match does not exist!')
+            flash('Match does not exist or score is already set')
         else:
             return redirect(url_for('check_results', team_a=team_a, team_b=team_b, date=date,
                             starttime=starttime, score_a=score_a, score_b=score_b))
