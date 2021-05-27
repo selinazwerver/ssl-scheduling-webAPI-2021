@@ -5,14 +5,13 @@ from os import popen
 from re import sub
 import subprocess
 from DataHandler import DataHandler
-# from CalendarHandler import CalendarHandler
+from CalendarHandler import CalendarHandler
 import threading
 
 class CommunicationHandler():
     def __init__(self):  
-        # self.sending_friendly_request = False
         self.dataHandler = DataHandler()
-        # self.calHandler = CalendarHandler()
+        self.calHandler = CalendarHandler()
 
         self.new_match_results = False # true if new match results are in
         

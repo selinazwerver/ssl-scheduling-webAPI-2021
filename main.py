@@ -6,7 +6,7 @@ from CommunicationHandler import CommunicationHandler
 # from CalendarHandler import CalendarHandler
 
 app = Flask(__name__)
-app.config["DEBUG"] = True
+app.config["DEBUG"] = False
 app.config['SECRET_KEY'] = 'blah'
 
 dataHandler = DataHandler()

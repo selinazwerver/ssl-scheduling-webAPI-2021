@@ -43,11 +43,11 @@ class CalendarHandler():
     def write_event_to_calendar(self, teamA, teamB, date, time, field, type):
         startTime = date + 'T' + time + ':00-00:00'
         endTime = datetime.strftime(datetime.strptime(startTime, '%Y-%m-%dT%H:%M:%S%z') + timedelta(hours=1), '%Y-%m-%dT%H:%M:%S%z')
-        
+
         if type == 'friendly':
             title = 'Friendly Match %s - %s' %(teamA, teamB)
         elif type == 'match':
-            title = '%s - %s' %(teamB, teamB)
+            title = '%s - %s' %(teamA, teamB)
 
         event = {
             'summary': title,
@@ -63,4 +63,4 @@ class CalendarHandler():
             },
         }
 
-        self.service.events().insert(calendarId=self.field_to_calendar_id(request['field']), body=event).execute()
+        self.service.events().insert(calendarId=self.field_to_calendar_id(field), body=event).execute()

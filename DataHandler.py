@@ -4,9 +4,11 @@ from datetime import datetime, timedelta
 import math
 import os
 from os import path
+from CalendarHandler import CalendarHandler
 
 class DataHandler():
     def __init__(self):
+        self.calHandler = CalendarHandler()
         return
 
     def date_to_hour(self, date):
@@ -126,12 +128,11 @@ class DataHandler():
                 reader = csv.reader(csv_file)
                 for data in reader:
                     data[3], data[4] = self.hour_to_date(int(data[4]))
-                    data[2] = self.field_number_to_letter(data[2])
-                    # self.calHandler.write_event_to_calendar(teamA=data[0], teamB=data[1], field=data[2],
-                    #                                         date=data[3], time=data[4], type='match')
+                    data[2] = self.field_number_to_letter(int(data[2]))
+                    self.calHandler.write_event_to_calendar(teamA=data[0], teamB=data[1], field=data[2],
+                                                            date=data[3], time=data[4], type='match')
             # remove new_match
             os.remove('new_match.csv')
-
 
         else:
             return
