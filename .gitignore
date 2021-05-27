@@ -3,6 +3,4 @@ test_stuff/
 test.py
 .vscode/
 sandbox/
-credentials.json
 quickstart.py
-token.json
