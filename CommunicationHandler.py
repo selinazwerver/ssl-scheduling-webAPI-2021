@@ -18,11 +18,6 @@ class CommunicationHandler():
         self.lock = threading.Lock()
 
         self.new_match_results = False # true if new match results are in
-        
-        # Make csv files for sending/receiving friendly requests
-        with open('friendly_request.csv', 'w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(['code', 'hour'])
 
     def update(self): # functions that need to be checked regularly
         while True:
@@ -33,6 +28,7 @@ class CommunicationHandler():
                 print('[CommHandler][update] Sending new match results')
                 self.new_match_results = False
                 self.lock.acquire()
+                self.dataHandler.export_schedule_to_csv()
                 # run some binary I guess
                 self.lock.release()
                 print('[CommHandler][update] Done sending new match results')

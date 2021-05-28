@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  web:
+    image: ssl-scheduling-web:latest
+    build:
+      context: .
+    volumes:
+      - web_data:/usr/src/web/data
+    ports:
+    - 5000:5000
+
+volumes:
+  web_data:

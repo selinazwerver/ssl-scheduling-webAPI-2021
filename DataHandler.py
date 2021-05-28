@@ -30,14 +30,14 @@ class DataHandler():
         if (number == 3): return 'D'
 
     def field_letter_to_number(self, letter):
-        if (letter == 'A'): return 1
-        if (letter == 'B'): return 2
-        if (letter == 'C'): return 3
-        if (letter == 'D'): return 4
+        if (letter == 'A'): return 0
+        if (letter == 'B'): return 1
+        if (letter == 'C'): return 2
+        if (letter == 'D'): return 3
 
     def get_db_connection(self, name):
         database = name + ".db"
-        conn_schedule = sqlite3.connect(database)
+        conn_schedule = sqlite3.connect('data/' + database)
         conn_schedule.row_factory = sqlite3.Row
         return conn_schedule
 
@@ -46,7 +46,7 @@ class DataHandler():
         conn = self.get_db_connection('schedule')
         cursor = conn.cursor()
         if (removedb): cursor.execute('DELETE FROM schedule')  # delete contents to avoid doubles
-        with open(filename, 'r') as csv_file:
+        with open('data/' + filename, 'r') as csv_file:
             reader = csv.reader(csv_file)
             for data in reader:
                 data[3], data[4] = self.hour_to_date(int(data[4]))
@@ -62,7 +62,7 @@ class DataHandler():
     def update_tournament_db(self):
         if path.exists('new_match.csv'):
             self.schedule_csv_to_db('new_match') # add data to database
-            with open('new_match.csv', 'r') as csv_file:
+            with open('data/new_match.csv', 'r') as csv_file:
                 reader = csv.reader(csv_file)
                 for data in reader:
                     data[3], data[4] = self.hour_to_date(int(data[4]))
@@ -74,6 +74,20 @@ class DataHandler():
 
         else:
             return
+
+    def export_schedule_to_csv(self):
+        filename = 'schedule_updated.csv'
+        writer = csv.writer(open('data/' + filename, 'w'))
+        conn = self.get_db_connection('schedule')
+        cursor = conn.cursor()
+        data = cursor.execute('SELECT * FROM schedule').fetchall()
+        for row in data:
+            date = row['day']
+            time = row['starttime']
+            field = self.field_letter_to_number(row['field'])
+            day, hour = self.date_to_hour(date + ' ' + time)
+            writer.writerow([row['teamA'], row['teamB'], field, day, hour, row['scoreTeamA'], row['scoreTeamB']])
+
 
     # def convert_db_readable_to_functional(self, name):
     #     conn = self.get_db_connection(name)

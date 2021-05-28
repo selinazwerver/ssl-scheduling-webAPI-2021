@@ -4,7 +4,6 @@ from datetime import datetime
 from DataHandler import DataHandler
 from CommunicationHandler import CommunicationHandler
 import threading
-# from CalendarHandler import CalendarHandler
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
@@ -183,5 +182,5 @@ def request_overview():
 update_thread = threading.Thread(target=commHandler.update)
 update_thread.start()
 
-app.run()
+app.run(host='0.0.0.0')
 update_thread.join()
