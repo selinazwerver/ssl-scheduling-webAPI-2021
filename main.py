@@ -6,7 +6,7 @@ from CommunicationHandler import CommunicationHandler
 import threading
 
 app = Flask(__name__)
-app.config["DEBUG"] = True
+app.config["DEBUG"] = False
 app.config['SECRET_KEY'] = 'blah'
 
 dataHandler = DataHandler()

@@ -1,5 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
+<style>
+h1 {
+color: black;
+margin-top: 0.67em;
+display: block;
+font-size: 3em;
+}
+</style>
+
 <h1>{% block title %} Check friendly request {% endblock %}</h1>
 <p>Please check if the friendly request is correct. If it is not, press cancel. </p>
 <form method="post">

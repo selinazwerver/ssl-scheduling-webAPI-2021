@@ -1,7 +1,53 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{% block title %} SSL Tournament Scheduler {% endblock %}</h1>
-<p>Welcome to the SSL Tournament Scheduler! 
-    Here you can input match results and request friendly matches.</p>
+<style>
+body {
+  position: relative;
+  width: 100%;
+  height: auto;
+  min-height: 35rem;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  background-size: cover;
+  background-image: url(/static/frontpage.jpg);
+}
+
+h1
+{text-align: center;
+color: white;
+text-shadow:
+    -0.5px -0.5px 0 #000,
+    0.5px -0.5px 0 #000,
+    -0.5px 0.5px 0 #000,
+    0.5px 0.5px 0 #000;
+margin-top: 0.67em;
+display: block;
+font-size: 5em;
+font-weight: bold;
+}
+
+p {
+text-align: center;
+color: white;
+text-shadow:
+    -0.5px -0.5px 0 #000,
+    0.5px -0.5px 0 #000,
+    -0.5px 0.5px 0 #000,
+    0.5px 0.5px 0 #000;
+display: block;
+font-size: 1.5em;
+}
+
+div {
+text-align: center;
+}
+
+</style>
+
+
+<h1>{% block title %} SSL Scheduling Tool{% endblock %}</h1>
+<p>Welcome to the SSL Scheduling tool. On this page you can enter match results and request friendly matches. </p>
+
 {% endblock %}
