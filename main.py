@@ -13,8 +13,9 @@ dataHandler = DataHandler()
 commHandler = CommunicationHandler()
 # calHandler = CalendarHandler()
 
-# init database
+# init database and availability
 dataHandler.schedule_csv_to_db(name='schedule', removedb=True)
+dataHandler.update_team_availability(name='schedule')
 
 
 

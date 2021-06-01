@@ -9,6 +9,27 @@ from CalendarHandler import CalendarHandler
 class DataHandler():
     def __init__(self):
         self.calHandler = CalendarHandler()
+
+        self.team_names_to_row = {
+            'ER-Force': 0,
+            'RoboCIn': 1,
+            'RoboTeam Twente': 2,
+            'KIKS': 3,
+            'TIGERs Mannheim': 4,
+            'KgpKubs': 5,
+            'RoboIME': 6,
+            'RoboFEI': 7,
+            'ITAndroids': 8,
+            'UBC Thunderbots': 9,
+            'RoboDragons': 10,
+            'MRL': 11,
+            'RoboJackets': 12,
+            'Tritons RCSC': 13,
+            'Omid': 14,
+            'URoboRus': 15,
+            'SRC': 16
+        }
+
         return
 
     def date_to_hour(self, date):
@@ -45,6 +66,8 @@ class DataHandler():
         filename = name + '.csv'
         conn = self.get_db_connection('schedule')
         cursor = conn.cursor()
+
+        # write csv to database
         if (removedb): cursor.execute('DELETE FROM schedule')  # delete contents to avoid doubles
         with open('data/' + filename, 'r') as csv_file:
             reader = csv.reader(csv_file)
@@ -84,62 +107,27 @@ class DataHandler():
         for row in data:
             date = row['day']
             time = row['starttime']
-            field = self.field_letter_to_number(row['field'])
+            field = self.field_letter_to_number(row['field'data/team_availability_copy.csv', 'r''])
             day, hour = self.date_to_hour(date + ' ' + time)
             writer.writerow([row['teamA'], row['teamB'], field, day, hour, row['scoreTeamA'], row['scoreTeamB']])
 
+    def update_team_availability(self, name):
+        # write matches from file to team_availability
+        reader_file = csv.reader(open('data/' + name + '.csv', 'r'))
+        reader_availability = csv.reader(open('data/team_availability_copy.csv', 'r'))
+        writer = csv.writer(open('data/team_availability.csv', 'w'))
 
-    # def convert_db_readable_to_functional(self, name):
-    #     conn = self.get_db_connection(name)
-    #     cursor = conn.cursor()
-    #     cursor2 = conn.cursor()
-    #     for row in cursor.execute('SELECT * FROM ' + name):
-    #         if (len(row['day']) > 2): # do not update if it's already ok
-    #             date = row['day']
-    #             time = row['starttime']
-    #             field = self.field_letter_to_number(row['field'])
-    #             day, hour = self.date_to_hour(date + ' ' + time)
-    #             cursor2.execute('UPDATE %s SET day = ?, starttime = ?, field = ? WHERE day = ? AND teamA = ? AND teamB = ? AND starttime = ?' %(name),
-    #             (date, time, field, row['day'], row['teamA'], row['teamB'], row['starttime']))
-    #     conn.commit()
-    #     conn.close()
+        availability = list(reader_availability)
 
-    # def export_db_to_csv(self, name):
-    #     filename = name + ".csv"
-    #     conn = self.get_db_connection(name)
-    #     cursor = conn.cursor()
-    #     cursor.execute("SELECT * FROM " + name)
-    #     with open(filename, 'w', newline='') as csv_file:
-    #         writer = csv.writer(csv_file)
-    #         writer.writerows(cursor)
+        for data in reader_file:
+            print(data[0], data[4])
+            # set team availability to zero because they have to play a match
+            availability[self.team_names_to_row[data[0]]][int(data[4]) + 1] = 0
+            availability[self.team_names_to_row[data[1]]][int(data[4]) + 1] = 0
 
-    # def export_csv_to_db(self, name):
-    #     filename = name + ".csv"
-    #     conn = self.get_db_connection(name)
-    #     cursor = conn.cursor()
-    #     cursor.execute('DELETE FROM ' + name) # delete contents to avoid doubles
-    #     with open(filename, 'r') as csv_file:
-    #         reader = csv.reader(csv_file)
-    #         data = next(reader)
-    #         query = 'insert into %s values ({0})' %(name)
-    #         query = query.format(','.join('?' * len(data)))
-    #         cursor.execute(query, data)
-    #         for data in reader:
-    #             cursor.execute(query, data)
-    #         conn.commit()
+        writer.writerows(availability)
 
-    # def convert_db_functional_to_readable(self, name):
-    #     # convert the hours in the database to a date/time format
-    #     conn = self.get_db_connection(name)
-    #     cursor = conn.cursor()
-    #     cursor2 = conn.cursor()
-    #     for row in cursor.execute('SELECT * FROM ' + name):
-    #         # print(row['day'], row['teamA'], row['teamB'], row['starttime'])
-    #         if ((type(row['day']) == int) or (len(row['day']) < 3)): # do not update if it's already ok
-    #             hour = row['starttime']
-    #             date, time = self.hour_to_date(int(hour))
-    #             field = self.field_number_to_letter(row['field'])
-    #             cursor2.execute('UPDATE %s SET day = ?, starttime = ?, field = ? WHERE day = ? AND teamA = ? AND teamB = ? AND starttime = ?' %(name),
-    #             (date, time, field, row['day'], row['teamA'], row['teamB'], row['starttime']))
-    #     conn.commit()
-    #     conn.close()
+        # copy new availability to the copied file
+        csv.writer(open('data/team_availability_copy.csv', 'w')).writerows(availability)
+
+        return
