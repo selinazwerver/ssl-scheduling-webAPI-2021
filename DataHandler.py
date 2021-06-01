@@ -62,13 +62,13 @@ class DataHandler():
         conn_schedule.row_factory = sqlite3.Row
         return conn_schedule
 
-    def schedule_csv_to_db(self, name, removedb=False): # use this only once for the initial database
+    def schedule_csv_to_db(self, name, init=False): # use this only once for the initial database
         filename = name + '.csv'
         conn = self.get_db_connection('schedule')
         cursor = conn.cursor()
 
         # write csv to database
-        if (removedb): cursor.execute('DELETE FROM schedule')  # delete contents to avoid doubles
+        if (init): cursor.execute('DELETE FROM schedule')  # delete contents to avoid doubles
         with open('data/' + filename, 'r') as csv_file:
             reader = csv.reader(csv_file)
             for data in reader:
@@ -107,11 +107,17 @@ class DataHandler():
         for row in data:
             date = row['day']
             time = row['starttime']
-            field = self.field_letter_to_number(row['field'data/team_availability_copy.csv', 'r''])
+            field = self.field_letter_to_number(row['field'])
             day, hour = self.date_to_hour(date + ' ' + time)
             writer.writerow([row['teamA'], row['teamB'], field, day, hour, row['scoreTeamA'], row['scoreTeamB']])
 
-    def update_team_availability(self, name):
+    def update_team_availability(self, name, init=False):
+        if (init):
+            # set base availability for all teams
+            base = list(csv.reader(open('data/team_availability_base.csv', 'r')))
+            csv.writer(open('data/team_availability.csv', 'w')).writerows(base)
+            csv.writer(open('data/team_availability_copy.csv', 'w')).writerows(base)
+
         # write matches from file to team_availability
         reader_file = csv.reader(open('data/' + name + '.csv', 'r'))
         reader_availability = csv.reader(open('data/team_availability_copy.csv', 'r'))
@@ -120,7 +126,6 @@ class DataHandler():
         availability = list(reader_availability)
 
         for data in reader_file:
-            print(data[0], data[4])
             # set team availability to zero because they have to play a match
             availability[self.team_names_to_row[data[0]]][int(data[4]) + 1] = 0
             availability[self.team_names_to_row[data[1]]][int(data[4]) + 1] = 0
@@ -129,5 +134,3 @@ class DataHandler():
 
         # copy new availability to the copied file
         csv.writer(open('data/team_availability_copy.csv', 'w')).writerows(availability)
-
-        return
