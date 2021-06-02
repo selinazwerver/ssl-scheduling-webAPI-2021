@@ -88,7 +88,7 @@ class DataHandler():
 
     def update_tournament_db(self):
         if path.exists('new_match.csv'):
-            self.update_team_availability('new_match') # update team availability              
+            self.update_team_availability('new_match', type='csv') # update team availability              
             self.schedule_csv_to_db('new_match') # add data to database
             
             # remove new_match
@@ -110,26 +110,32 @@ class DataHandler():
             day, hour = self.date_to_hour(date + ' ' + time)
             writer.writerow([row['teamA'], row['teamB'], field, day, hour, row['scoreTeamA'], row['scoreTeamB']])
 
-    def update_team_availability(self, name, init=False):
+    def update_team_availability(self, type, init=False, name='None', data=[]):
         if (init == True):
             # set base availability for all teams
             base = list(csv.reader(open('data/team_availability_base.csv', 'r'), delimiter=','))
             csv.writer(open('data/team_availability.csv', 'w', newline='')).writerows(base)
             csv.writer(open('data/team_availability_copy.csv', 'w', newline='')).writerows(base)
 
+        # exit()
         # write matches from file to team_availability
-        reader_file = csv.reader(open('data/' + name + '.csv', 'r'))
-        reader_availability = csv.reader(open('data/team_availability_copy.csv', 'r'))
+        reader_availability = csv.reader(open('data/team_availability_copy.csv', 'r'), delimiter=',')
         writer = csv.writer(open('data/team_availability.csv', 'w', newline=''))
 
         availability = list(reader_availability)
 
-        for data in reader_file:
-            # set team availability to zero because they have to play a match
-            availability[self.team_names_to_row[data[0]]][int(data[4]) + 1] = 0
-            availability[self.team_names_to_row[data[1]]][int(data[4]) + 1] = 0
+        if (type=='csv'):
+            reader_file = csv.reader(open('data/' + name + '.csv', 'r'))
+            for data in reader_file:
+                # set team availability to zero because they have to play a match
+                availability[self.team_names_to_row[data[0]]][int(data[4]) + 1] = 0
+                availability[self.team_names_to_row[data[1]]][int(data[4]) + 1] = 0
+        elif (type=='list'):
+            availability[self.team_names_to_row[data[0]]][int(data[2]) + 1] = 0
+            availability[self.team_names_to_row[data[1]]][int(data[2]) + 1] = 0
+        
 
         writer.writerows(availability)
 
         # copy new availability to the copied file
-        csv.writer(open('data/team_availability_copy.csv', 'w')).writerows(availability)
+        csv.writer(open('data/team_availability_copy.csv', 'w', newline='')).writerows(availability)

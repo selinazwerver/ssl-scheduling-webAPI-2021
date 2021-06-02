@@ -69,10 +69,11 @@ class CommunicationHandler():
             print('[CommHandler][send_friendly_request] Friendly request is:', result)
 
             if result == 'accepted': # request is accepted, update calendar and database
+                self.dataHandler.update_team_availability(type='list', data=[request['teamA'], request['teamB'], hour]) # update availability
                 field = self.dataHandler.field_number_to_letter(field)
-                self.calHandler.write_event_to_calendar(teamA=request['teamA'], teamB=request['teamB'],
-                                                        date=request['day'], time=request['starttime'],
-                                                        field=field, type='friendly')
+                # self.calHandler.write_event_to_calendar(teamA=request['teamA'], teamB=request['teamB'],
+                                                        # date=request['day'], time=request['starttime'],
+                                                        # field=field, type='friendly')
                 conn = self.dataHandler.get_db_connection('friendlies')
                 cursor = conn.cursor()
                 cursor.execute('UPDATE friendlies SET status = ? WHERE status = ? AND day = ? AND teamA = ? AND teamB = ? AND starttime = ?', 
@@ -97,9 +98,6 @@ class CommunicationHandler():
                 conn.commit()
                 conn.close()
                 return
-
-        # temp!
-        # self.calHandler.write_event_to_calendar(request)
 
     def receive_tournament_update(self):
         self.dataHandler.update_tournament_db()
