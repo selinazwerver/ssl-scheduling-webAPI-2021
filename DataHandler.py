@@ -112,16 +112,16 @@ class DataHandler():
             writer.writerow([row['teamA'], row['teamB'], field, day, hour, row['scoreTeamA'], row['scoreTeamB']])
 
     def update_team_availability(self, name, init=False):
-        if (init):
+        if (init == True):
             # set base availability for all teams
-            base = list(csv.reader(open('data/team_availability_base.csv', 'r')))
-            csv.writer(open('data/team_availability.csv', 'w')).writerows(base)
-            csv.writer(open('data/team_availability_copy.csv', 'w')).writerows(base)
+            base = list(csv.reader(open('data/team_availability_base.csv', 'r'), delimiter=','))
+            csv.writer(open('data/team_availability.csv', 'w', newline='')).writerows(base)
+            csv.writer(open('data/team_availability_copy.csv', 'w', newline='')).writerows(base)
 
         # write matches from file to team_availability
         reader_file = csv.reader(open('data/' + name + '.csv', 'r'))
         reader_availability = csv.reader(open('data/team_availability_copy.csv', 'r'))
-        writer = csv.writer(open('data/team_availability.csv', 'w'))
+        writer = csv.writer(open('data/team_availability.csv', 'w', newline=''))
 
         availability = list(reader_availability)
 

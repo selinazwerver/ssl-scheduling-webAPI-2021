@@ -20,7 +20,6 @@ dataHandler.update_team_availability(name='schedule', init=True)
 # test
 from RefereeHandler import RefereeHandler
 refHandler = RefereeHandler()
-refHandler.init_referee_counter()
 
 
 ###############################################################
@@ -184,7 +183,7 @@ def request_overview():
 ############################# RUN #############################
 ###############################################################
 update_thread = threading.Thread(target=commHandler.update)
-update_thread.start()
+# update_thread.start()
 
 app.run(host='0.0.0.0')
-update_thread.join()
+# update_thread.join()
