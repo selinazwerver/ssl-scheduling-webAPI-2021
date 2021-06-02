@@ -139,8 +139,5 @@ class DataHandler():
 
         # copy new availability to the copied file
         csv.writer(open('data/team_availability_copy.csv', 'w', newline='')).writerows(availability)
-    
-    def db_to_json(self):
-        conn = self.get_db_connection('schedule')
-        cursor = conn.cursor()
-        cursor.execute('SELECT day, starttime, referee FROM schedule FOR JSON AUTO')
+
+        

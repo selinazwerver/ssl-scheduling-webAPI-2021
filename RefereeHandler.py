@@ -24,7 +24,10 @@ class RefereeHandler():
     def get_referee(self, hour):
         teams = self.find_available_teams(hour=hour)
 
-        lowest_count = 900
+        if len(teams) == 0:
+            return 'OC, TC'
+
+        lowest_count = 900 # arbitraty high number
         first_referee = ''
         for team in teams:
             count = self.referee_counter[list(list(zip(*self.referee_counter))[0]).index(team)][1]
@@ -33,6 +36,9 @@ class RefereeHandler():
                 first_referee = team
 
         self.update_referee_counter(team=first_referee, type='first') 
+
+        if len(teams) == 1:
+            return first_referee + ', OC'
 
         # remove first referee from options and determine second
         teams.remove(first_referee)
