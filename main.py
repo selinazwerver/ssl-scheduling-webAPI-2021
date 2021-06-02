@@ -4,6 +4,7 @@ from datetime import datetime
 from DataHandler import DataHandler
 from CommunicationHandler import CommunicationHandler
 import threading
+import json
 
 app = Flask(__name__)
 app.config["DEBUG"] = False
@@ -14,9 +15,8 @@ commHandler = CommunicationHandler()
 # calHandler = CalendarHandler()
 
 # init database and availability
+dataHandler.update_team_availability(name='schedule', init=True, type='csv')
 dataHandler.schedule_csv_to_db(name='schedule', init=True)
-dataHandler.update_team_availability(name='schedule', init=True)
-
 
 ###############################################################
 ############################ HOME #############################
@@ -24,6 +24,28 @@ dataHandler.update_team_availability(name='schedule', init=True)
 @app.route('/', methods=['GET', 'POST'])
 def index():
     return render_template('home.html')
+
+
+
+
+
+
+
+
+###############################################################
+###################### TOURNAMENT JSON ########################
+###############################################################
+@app.route('/tournament_json', methods=['GET'])
+def tournament_json():
+    conn = dataHandler.get_db_connection('schedule')
+    cursor = conn.cursor()
+    test = cursor.execute('SELECT day, starttime, referee FROM schedule').fetchall()
+    return json.dumps([dict(ix) for ix in test] )
+
+
+
+
+
 
 
 
@@ -179,7 +201,7 @@ def request_overview():
 ############################# RUN #############################
 ###############################################################
 update_thread = threading.Thread(target=commHandler.update)
-update_thread.start()
+# update_thread.start()
 
 app.run(host='0.0.0.0')
-update_thread.join()
+# update_thread.join()
