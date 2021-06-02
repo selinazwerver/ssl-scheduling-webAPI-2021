@@ -1,3 +1,4 @@
+from RefereeHandler import RefereeHandler
 import sqlite3
 import csv
 from datetime import datetime, timedelta
@@ -9,6 +10,7 @@ from CalendarHandler import CalendarHandler
 class DataHandler():
     def __init__(self):
         self.calHandler = CalendarHandler()
+        self.refHandler = RefereeHandler()
 
         self.team_names_to_row = {
             'ER-Force': 0,
@@ -29,6 +31,8 @@ class DataHandler():
             'URoboRus': 15,
             'SRC': 16
         }
+
+        self.refHandler.init_referee_counter(self.team_names_to_row)
 
         return
 
@@ -67,31 +71,26 @@ class DataHandler():
         conn = self.get_db_connection('schedule')
         cursor = conn.cursor()
 
-        # write csv to database
+        # write csv to database, update calendar
         if (init): cursor.execute('DELETE FROM schedule')  # delete contents to avoid doubles
         with open('data/' + filename, 'r') as csv_file:
             reader = csv.reader(csv_file)
             for data in reader:
+                referee = self.refHandler.get_referee(data[4]) # get referee for the match
                 data[3], data[4] = self.hour_to_date(int(data[4]))
                 data[2] = self.field_number_to_letter(int(data[2]))
-                cursor.execute('INSERT INTO schedule(day, teamA, teamB, starttime, field) VALUES (?,?,?,?,?)',
-                            (data[3], data[0], data[1], data[4], data[2]))
+                cursor.execute('INSERT INTO schedule(day, teamA, teamB, starttime, field, referee) VALUES (?,?,?,?,?,?)',
+                            (data[3], data[0], data[1], data[4], data[2], referee))
+                # self.calHandler.write_event_to_calendar(teamA=data[0], teamB=data[1], field=data[2],
+                                                            # date=data[3], time=data[4], referee=referee, type='match')
             conn.commit()
             conn.close()
 
-    # Update the schedule database based on the 'new matches' csv
-    # Write match to calendar
-    # Write match to database
     def update_tournament_db(self):
         if path.exists('new_match.csv'):
+            self.update_team_availability('new_match') # update team availability              
             self.schedule_csv_to_db('new_match') # add data to database
-            with open('data/new_match.csv', 'r') as csv_file:
-                reader = csv.reader(csv_file)
-                for data in reader:
-                    data[3], data[4] = self.hour_to_date(int(data[4]))
-                    data[2] = self.field_number_to_letter(int(data[2]))
-                    self.calHandler.write_event_to_calendar(teamA=data[0], teamB=data[1], field=data[2],
-                                                            date=data[3], time=data[4], type='match')
+            
             # remove new_match
             os.remove('new_match.csv')
 

@@ -19,6 +19,7 @@ font-size: 3em;
         <th>Score Team A</th>
         <th>Team B</th>
         <th>Score Team B</th>
+        <th>Referee</th>
   </tr>
     {% for match in schedule %}
         <tr>
@@ -29,6 +30,7 @@ font-size: 3em;
             <td>{{match['scoreTeamA']}}</td>
             <td>{{match['teamB']}}</td>
             <td>{{match['scoreTeamB']}}</td>
+            <td>{{match['referee']}}</td>
         </tr>
     {% endfor %}
 </table>

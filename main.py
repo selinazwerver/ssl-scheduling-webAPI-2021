@@ -17,10 +17,6 @@ commHandler = CommunicationHandler()
 dataHandler.schedule_csv_to_db(name='schedule', init=True)
 dataHandler.update_team_availability(name='schedule', init=True)
 
-# test
-from RefereeHandler import RefereeHandler
-refHandler = RefereeHandler()
-
 
 ###############################################################
 ############################ HOME #############################

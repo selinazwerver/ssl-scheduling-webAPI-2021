@@ -40,7 +40,7 @@ class CalendarHandler():
         elif field == 'D':
             return 'c_c1n27rok56cg74fauicqkma0uc@group.calendar.google.com'
 
-    def write_event_to_calendar(self, teamA, teamB, date, time, field, type):
+    def write_event_to_calendar(self, teamA, teamB, date, time, field, type, referee='None'):
         startTime = date + 'T' + time + ':00-00:00'
         endTime = datetime.strftime(datetime.strptime(startTime, '%Y-%m-%dT%H:%M:%S%z') + timedelta(hours=1), '%Y-%m-%dT%H:%M:%S%z')
 
