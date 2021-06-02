@@ -51,7 +51,7 @@ class CalendarHandler():
         event = {
             'summary': title,
             'location': field,
-            'description': title,
+            'description': 'Referee: ' + referee,
             'start': {
                 'dateTime': startTime,
                 'timeZone': 'Iceland',
