@@ -1,16 +1,23 @@
-from RefereeHandler import RefereeHandler
 import sqlite3
 import csv
 from datetime import datetime, timedelta
 import math
 import os
+import operator
 from os import path
 from CalendarHandler import CalendarHandler
 
 class DataHandler():
     def __init__(self):
         self.calHandler = CalendarHandler()
-        self.refHandler = RefereeHandler()
+
+        self.csv_format = {
+            'teamA': 0,
+            'teamB': 1,
+            'field': 2,
+            'time': 3
+
+        }
 
         self.team_names_to_row = {
             'ER-Force': 0,
@@ -21,18 +28,17 @@ class DataHandler():
             'KgpKubs': 5,
             'RoboIME': 6,
             'RoboFEI': 7,
-            'ITAndroids': 8,
-            'UBC Thunderbots': 9,
-            'RoboDragons': 10,
-            'MRL': 11,
-            'RoboJackets': 12,
-            'Tritons RCSC': 13,
-            'Omid': 14,
-            'URoboRus': 15,
-            'SRC': 16
+            'UBC Thunderbots': 8,
+            'RoboDragons': 9,
+            'MRL': 10,
+            'RoboJackets': 11,
+            'Tritons RCSC': 12,
+            'Omid': 13,
+            'URoboRus': 14,
+            'SRC': 15
         }
 
-        self.refHandler.init_referee_counter(self.team_names_to_row)
+        self.init_referee_counter(self.team_names_to_row)
 
         return
 
@@ -74,15 +80,16 @@ class DataHandler():
         # write csv to database, update calendar
         if (init): cursor.execute('DELETE FROM schedule')  # delete contents to avoid doubles
         with open('data/' + filename, 'r') as csv_file:
-            reader = csv.reader(csv_file)
-            for data in reader:
-                referee = self.refHandler.get_referee(data[4]) # get referee for the match
-                data[3], data[4] = self.hour_to_date(int(data[4]))
-                data[2] = self.field_number_to_letter(int(data[2]))
+            reader = csv.reader(csv_file, delimiter=',')
+            sortedreader = sorted(reader, key=lambda row: int(row[self.csv_format['time']]), reverse=False)
+            for data in sortedreader:
+                referee = self.get_referee(data[self.csv_format['time']]) # get referee for the match
+                day, data[self.csv_format['time']] = self.hour_to_date(int(data[self.csv_format['time']]))
+                data[self.csv_format['field']] = self.field_number_to_letter(int(data[self.csv_format['field']]))
                 cursor.execute('INSERT INTO schedule(day, teamA, teamB, starttime, field, referee) VALUES (?,?,?,?,?,?)',
-                            (data[3], data[0], data[1], data[4], data[2], referee))
+                            (day, data[self.csv_format['teamA']], data[self.csv_format['teamB']], data[self.csv_format['time']], data[self.csv_format['field']], referee))
                 # self.calHandler.write_event_to_calendar(teamA=data[0], teamB=data[1], field=data[2],
-                                                            # date=data[3], time=data[4], referee=referee, type='match')
+                                                            # date=day, time=data[3], referee=referee, type='match')
             conn.commit()
             conn.close()
 
@@ -99,7 +106,7 @@ class DataHandler():
 
     def export_schedule_to_csv(self):
         filename = 'schedule_updated.csv'
-        writer = csv.writer(open('data/' + filename, 'w'))
+        writer = csv.writer(open('data/' + filename, 'w', newline=''))
         conn = self.get_db_connection('schedule')
         cursor = conn.cursor()
         data = cursor.execute('SELECT * FROM schedule').fetchall()
@@ -117,7 +124,6 @@ class DataHandler():
             csv.writer(open('data/team_availability.csv', 'w', newline='')).writerows(base)
             csv.writer(open('data/team_availability_copy.csv', 'w', newline='')).writerows(base)
 
-        # exit()
         # write matches from file to team_availability
         reader_availability = csv.reader(open('data/team_availability_copy.csv', 'r'), delimiter=',')
         writer = csv.writer(open('data/team_availability.csv', 'w', newline=''))
@@ -125,14 +131,16 @@ class DataHandler():
         availability = list(reader_availability)
 
         if (type=='csv'):
-            reader_file = csv.reader(open('data/' + name + '.csv', 'r'))
-            for data in reader_file:
+            reader_file = csv.reader(open('data/' + name + '.csv', 'r'), delimiter=',')
+            for row in reader_file:
                 # set team availability to zero because they have to play a match
-                availability[self.team_names_to_row[data[0]]][int(data[4]) + 1] = 0
-                availability[self.team_names_to_row[data[1]]][int(data[4]) + 1] = 0
+                availability[self.team_names_to_row[row[self.csv_format['teamA']]]][int(row[self.csv_format['time']]) + 1] = 0
+                availability[self.team_names_to_row[row[self.csv_format['teamB']]]][int(row[self.csv_format['time']]) + 1] = 0
         elif (type=='list'):
             availability[self.team_names_to_row[data[0]]][int(data[2]) + 1] = 0
             availability[self.team_names_to_row[data[1]]][int(data[2]) + 1] = 0
+        elif (type=='ref'):
+            availability[self.team_names_to_row[data[0]]][int(data[1]) + 1] = 0
         
 
         writer.writerows(availability)
@@ -140,4 +148,66 @@ class DataHandler():
         # copy new availability to the copied file
         csv.writer(open('data/team_availability_copy.csv', 'w', newline='')).writerows(availability)
 
+
+
+
+    # REFEREE STUFF
+    def init_referee_counter(self, teams):
+        self.referee_counter = []
+        self.second_referee_counter = []
+        for team in teams:
+            self.referee_counter.append([team, 0])
+            self.second_referee_counter.append([team, 0])
         
+    def find_available_teams(self, hour):
+        reader = csv.reader(open('data/team_availability.csv', 'r'), delimiter=',')
+        availability = list(reader)
+        available_teams = []
+        for row in availability:
+            if int(row[int(hour)+1]) == 1:
+                available_teams.append(row[0])
+        
+        return available_teams
+
+    def get_referee(self, hour):
+        teams = self.find_available_teams(hour=hour)
+
+        if len(teams) == 0:
+            return 'OC, TC'
+
+        lowest_count = 900 # arbitraty high number
+        first_referee = ''
+        for team in teams:
+            count = self.referee_counter[list(list(zip(*self.referee_counter))[0]).index(team)][1]
+            if count < lowest_count:
+                lowest_count = count
+                first_referee = team
+
+        self.update_team_availability(type='ref', data=[first_referee, hour])
+        self.update_referee_counter(team=first_referee, type='first') 
+
+        if len(teams) == 1:
+            return first_referee + ', OC'
+
+        # remove first referee from options and determine second
+        teams.remove(first_referee)
+
+        lowest_count = 900
+        second_referee = ''
+        for team in teams:
+            count = self.second_referee_counter[list(list(zip(*self.second_referee_counter))[0]).index(team)][1]
+            if count < lowest_count:
+                lowest_count = count
+                second_referee = team
+        
+        self.update_team_availability(type='ref', data=[second_referee, hour])
+        self.update_referee_counter(team=second_referee, type='second') 
+        
+        return first_referee + ', ' + second_referee
+
+
+    def update_referee_counter(self, team, type):
+        if type=='first':
+            self.referee_counter[list(list(zip(*self.referee_counter))[0]).index(team)][1] = self.referee_counter[list(list(zip(*self.referee_counter))[0]).index(team)][1] + 1
+        elif type=='second':
+            self.second_referee_counter[list(list(zip(*self.second_referee_counter))[0]).index(team)][1] = self.second_referee_counter[list(list(zip(*self.second_referee_counter))[0]).index(team)][1] + 1

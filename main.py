@@ -18,6 +18,7 @@ commHandler = CommunicationHandler()
 dataHandler.update_team_availability(name='schedule', init=True, type='csv')
 dataHandler.schedule_csv_to_db(name='schedule', init=True)
 
+
 ###############################################################
 ############################ HOME #############################
 ###############################################################

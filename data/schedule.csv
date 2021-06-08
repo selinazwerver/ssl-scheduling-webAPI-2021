@@ -1,10 +1,24 @@
-URoboRus,MRL,0,0,6
-ITAndroids,MRL,0,0,10
-URoboRus,RoboJackets,0,0,13
-ITAndroids,UBC Thunderbots,0,0,15
-RoboJackets,MRL,0,0,17
-URoboRus,UBC Thunderbots,0,0,19
-ITAndroids,RoboJackets,0,0,21
-RoboJackets,UBC Thunderbots,0,1,1
-UBC Thunderbots,MRL,0,1,5
-ITAndroids,URoboRus,0,1,10
+URoboRus,MRL,0,6
+RoboJackets,MRL,0,13
+URoboRus,UBC Thunderbots,0,15
+URoboRus,RoboJackets,0,19
+RoboJackets,UBC Thunderbots,0,23
+UBC Thunderbots,MRL,0,27
+Omid,KIKS,0,3
+KIKS,TIGERs Mannheim,0,7
+Omid,TIGERs Mannheim,0,11
+RoboCIn,KIKS,1,11
+Omid,RoboCIn,1,15
+RoboCIn,TIGERs Mannheim,1,19
+RoboTeam Twente,ER-Force,1,7
+RoboIME,ER-Force,2,11
+Tritons RCSC,RoboTeam Twente,0,16
+RoboIME,RoboTeam Twente,0,20
+Tritons RCSC,ER-Force,1,20
+Tritons RCSC,RoboIME,0,24
+SRC,RoboDragons,0,1
+KgpKubs,RoboDragons,0,5
+KgpKubs,SRC,0,9
+RoboFEI,SRC,1,13
+KgpKubs,RoboFEI,0,17
+RoboFEI,RoboDragons,1,23
