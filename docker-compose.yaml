@@ -1,14 +1,22 @@
 version: '3'
 
 services:
-  web:
+  ssl-scheduling-web:
     image: ssl-scheduling-web:latest
     build:
       context: .
     volumes:
-      - web_data:/usr/src/web/data
+      - web_data:/usr/src/app/data
+      - ./credentials.json:/usr/src/app/credentials.json
+      - ./token.json:/usr/src/app/token.json
     ports:
-    - 5000:5000
+      - 5000:5000
+    networks:
+      - 'ssl-simulation-setup_expose'
 
 volumes:
   web_data:
+
+networks:
+  ssl-simulation-setup_expose:
+#    external: true
