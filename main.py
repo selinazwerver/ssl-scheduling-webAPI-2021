@@ -177,12 +177,12 @@ def check_friendly():
     # put the results in the database
     if (request.method == 'POST') and (request.form['submit'] == 'submit'):
         # insert request in friendly database
-        conn = dataHandler.get_db_connection('friendlies')
-        cur = conn.cursor()
-        conn.execute('INSERT INTO friendlies (day, teamA, teamB, starttime, status, timestamp) VALUES (?,?,?,?,?,?)',
-                         (date, team_a, team_b, starttime, 'Pending', datetime.now()))
-        conn.commit()
-        conn.close()
+        # conn = dataHandler.get_db_connection('friendlies')
+        # cur = conn.cursor()
+        # conn.execute('INSERT INTO friendlies (day, teamA, teamB, starttime, status, timestamp) VALUES (?,?,?,?,?,?)',
+                        #  (date, team_a, team_b, starttime, 'Pending', datetime.now()))
+        # conn.commit()
+        # conn.close()
         return redirect(url_for('request_overview'))
 
     return render_template('check_friendly.html', team_a=team_a, team_b=team_b, date=date,
@@ -202,7 +202,7 @@ def request_overview():
 ############################# RUN #############################
 ###############################################################
 update_thread = threading.Thread(target=commHandler.update)
-# update_thread.start()
+update_thread.start()
 
 app.run(host='0.0.0.0')
-# update_thread.join()
+update_thread.join()
