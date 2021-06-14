@@ -1,12 +1,8 @@
-import csv
-import math
-from datetime import datetime, timedelta
+from datetime import datetime
 from os import popen
 from re import sub
 import subprocess
 import threading
-
-from googleapiclient.http import RequestMockBuilder
 from DataHandler import DataHandler
 from CalendarHandler import CalendarHandler
 import time
@@ -17,7 +13,6 @@ class CommunicationHandler():
         self.dataHandler = DataHandler()
         self.calHandler = CalendarHandler()
         self.lock = threading.Lock()
-
         self.new_match_results = False  # true if new match results are in
 
     def update(self):  # functions that need to be checked regularly
@@ -49,6 +44,7 @@ class CommunicationHandler():
         if request is None:  # no requests
             return 0
         elif (datetime.strptime(request['timestamp'], '%Y-%m-%d %H:%M:%S.%f') > datetime.now()):
+            # request time is not passed (used for 'try again in x hours')
             return 0
         else:
             return request

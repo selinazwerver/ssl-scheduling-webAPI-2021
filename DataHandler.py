@@ -177,7 +177,7 @@ class DataHandler():
         if len(teams) == 0:
             return 'OC, TC'
 
-        lowest_count = 900  # arbitraty high number
+        lowest_count = 900  # arbitrary high number
         first_referee = ''
         for team in teams:
             count = self.referee_counter[list(list(zip(*self.referee_counter))[0]).index(team)][1]
