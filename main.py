@@ -206,6 +206,6 @@ def request_overview():
 update_thread = threading.Thread(target=commHandler.update)
 update_thread.start()
 
-serve(app, host="0.0.0.0", post=5000)
+serve(app, host="0.0.0.0", port=5000)
 # app.run(host='0.0.0.0')
 update_thread.join()
