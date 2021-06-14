@@ -1,3 +1,9 @@
+.gitignore
 .idea
 credentials.json
 token.json
+.vscode/
+__pycache__/
+data/
+quickstart.py
+sandbox/
