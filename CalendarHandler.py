@@ -42,11 +42,15 @@ class CalendarHandler():
 
     def write_event_to_calendar(self, teamA, teamB, date, time, field, type, referee='None'):
         startTime = date + 'T' + time + ':00-00:00'
-        endTime = datetime.strftime(datetime.strptime(startTime, '%Y-%m-%dT%H:%M:%S%z') + timedelta(hours=1), '%Y-%m-%dT%H:%M:%S%z')
+        endTime = datetime.strftime(datetime.strptime(startTime, '%Y-%m-%dT%H:%M:%S%z') + timedelta(hours=1),
+                                    '%Y-%m-%dT%H:%M:%S%z')
 
-        if type == 'friendly': title = 'Friendly Match %s - %s' %(teamA, teamB)
-        elif type == 'match': title = '%s - %s' %(teamA, teamB)
-        else: return
+        if type == 'friendly':
+            title = 'Friendly Match %s - %s' % (teamA, teamB)
+        elif type == 'match':
+            title = '%s - %s' % (teamA, teamB)
+        else:
+            return
 
         event = {
             'summary': title,

@@ -1,6 +1,5 @@
 .gitignore
 .idea
-credentials.json
 token.json
 .vscode/
 __pycache__/
