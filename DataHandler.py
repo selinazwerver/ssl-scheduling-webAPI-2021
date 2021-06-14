@@ -99,7 +99,7 @@ class DataHandler():
             self.schedule_csv_to_db('new_match') # add data to database
             
             # remove new_match
-            os.remove('new_match.csv')
+            os.remove('data/new_match.csv')
 
         else:
             return
