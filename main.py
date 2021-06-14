@@ -1,10 +1,12 @@
-from flask import Flask, render_template, request, url_for, flash, redirect
-from datetime import datetime
-from DataHandler import DataHandler
-from CommunicationHandler import CommunicationHandler
-import threading
 import json
+import threading
+from datetime import datetime
+
+from flask import Flask, render_template, request, url_for, flash, redirect
 from waitress import serve
+
+from CommunicationHandler import CommunicationHandler
+from DataHandler import DataHandler
 
 app = Flask(__name__)
 app.config["DEBUG"] = False
@@ -23,6 +25,7 @@ dataHandler.schedule_csv_to_db(name='schedule', init=True)
 ###############################################################
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    # homepage
     print('[index]')
     return render_template('home.html')
 
@@ -32,10 +35,12 @@ def index():
 ###############################################################
 @app.route('/tournament_json', methods=['GET'])
 def tournament_json():
+    # tournament, results and referees in json format
     print('[tournament_json]')
     conn = dataHandler.get_db_connection('schedule')
     cursor = conn.cursor()
     test = cursor.execute('SELECT day, starttime, referee FROM schedule').fetchall()
+    conn.close()
     return json.dumps([dict(ix) for ix in test])
 
 
@@ -44,6 +49,7 @@ def tournament_json():
 ###############################################################
 @app.route('/tournament_overview', methods=['GET'])
 def tournament():
+    # overview of the tournament in table format
     print('[tournament_overview]')
     conn = dataHandler.get_db_connection('schedule')
     schedule = conn.execute('SELECT * FROM schedule ORDER BY day, starttime').fetchall()
@@ -56,6 +62,7 @@ def tournament():
 ###############################################################
 @app.route('/results', methods=['GET', 'POST'])
 def results():
+    # form where teams can fill in the results of the match
     print('[results]')
     conn = dataHandler.get_db_connection('schedule')
     cursor = conn.cursor()
@@ -67,6 +74,8 @@ def results():
         starttime = request.form['time']
         score_a = request.form['score_a']
         score_b = request.form['score_b']
+
+        print('[main][results] Got results for', team_a, '-', team_b, 'at', date, '', starttime)
 
         # check if combination of data exists
         cursor.execute(
@@ -91,7 +100,7 @@ def results():
         #     flash('This game has not yet started!')
         elif len(rows) == 0:
             flash('Match does not exist or score is already set')
-        else:
+        else: # send to 'check the results' page
             return redirect(url_for('check_results', team_a=team_a, team_b=team_b, date=date,
                                     starttime=starttime, score_a=score_a, score_b=score_b))
 
@@ -100,8 +109,8 @@ def results():
 
 @app.route('/check_results', methods=['GET', 'POST'])
 def check_results():
+    # make sure that the results are correctly implemented
     print('[check_results]')
-    # parsing as function arguments was apparently not ok
     team_a = request.args['team_a']
     team_b = request.args['team_b']
     date = request.args['date']
@@ -124,7 +133,7 @@ def check_results():
         conn.commit()
         conn.close()
         commHandler.new_match_results = True
-        return redirect(url_for('tournament'))
+        return redirect(url_for('tournament')) # send back to tournament overview
 
     return render_template('check_results.html', team_a=team_a, team_b=team_b, date=date,
                            starttime=starttime, score_a=score_a, score_b=score_b)
@@ -135,6 +144,7 @@ def check_results():
 ###############################################################
 @app.route('/request_friendly', methods=['GET', 'POST'])
 def request_friendly():
+    # form where teams can request a friendly match
     print('[request_friendly]')
     if request.method == 'POST':
         team_a = request.form['team_a']
@@ -145,12 +155,14 @@ def request_friendly():
         # send a warning if something is missing
         if not team_a:
             flash('Team A is required!')
-        if not team_b:
+        elif not team_b:
             flash('Team B is required!')
-        if not date:
+        elif not date:
             flash('Date is required!')
-        if not starttime:
+        elif not starttime:
             flash('Time is required!')
+        elif (datetime.now() < datetime.strptime('2021-06-23 00:00', '%Y-%m-%d %H:%M')):
+            flash('You can only request friendlies after 23-06-2021!')
         else:
             return redirect(url_for('check_friendly', team_a=team_a, team_b=team_b, date=date, starttime=starttime))
 
