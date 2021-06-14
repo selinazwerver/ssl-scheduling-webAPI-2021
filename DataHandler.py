@@ -94,7 +94,7 @@ class DataHandler():
             conn.close()
 
     def update_tournament_db(self):
-        if path.exists('new_match.csv'):
+        if path.exists('data/new_match.csv'):
             self.update_team_availability('new_match', type='csv') # update team availability              
             self.schedule_csv_to_db('new_match') # add data to database
             
