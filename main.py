@@ -40,6 +40,7 @@ def index():
 ###############################################################
 @app.route('/tournament_json', methods=['GET'])
 def tournament_json():
+    print('[tournament_json]')
     conn = dataHandler.get_db_connection('schedule')
     cursor = conn.cursor()
     test = cursor.execute('SELECT day, starttime, referee FROM schedule').fetchall()
@@ -58,6 +59,7 @@ def tournament_json():
 ###############################################################
 @app.route('/tournament_overview', methods = ['GET'])
 def tournament():
+    print('[tournament_overview]')
     conn = dataHandler.get_db_connection('schedule')
     schedule = conn.execute('SELECT * FROM schedule').fetchall()
     conn.close()
@@ -71,6 +73,7 @@ def tournament():
 ###############################################################
 @app.route('/results', methods = ['GET', 'POST'])
 def results():
+    print('[results]')
     conn = dataHandler.get_db_connection('schedule')
     cursor = conn.cursor()
 
@@ -100,6 +103,8 @@ def results():
             flash('Score of Team A is required!')
         elif not score_b:
             flash('Score of Team B is required!')
+        # elif (datetime.now () < datetime.strptime(date + ' ' + starttime, '%Y-%m-%d %H:%M')):
+        #     flash('This game has not yet started!')
         elif len(rows) == 0:
             flash('Match does not exist or score is already set')
         else:
@@ -110,6 +115,7 @@ def results():
 
 @app.route('/check_results', methods=['GET', 'POST'])
 def check_results():
+    print('[check_results]')
     # parsing as function arguments was apparently not ok
     team_a = request.args['team_a']
     team_b = request.args['team_b']
@@ -145,6 +151,7 @@ def check_results():
 ###############################################################
 @app.route('/request_friendly', methods = ['GET', 'POST'])
 def request_friendly():
+    print('[request_friendly]')
     if request.method == 'POST':
         team_a = request.form['team_a']
         team_b = request.form['team_b']
@@ -167,6 +174,7 @@ def request_friendly():
 
 @app.route('/check_friendly', methods=['GET', 'POST'])
 def check_friendly():
+    print('[check_friendly]')
     team_a = request.args['team_a']
     team_b = request.args['team_b']
     date = request.args['date']
@@ -192,6 +200,7 @@ def check_friendly():
 
 @app.route('/request_overview', methods = ['GET'])
 def request_overview():
+    print('[request_overview]')
     conn = dataHandler.get_db_connection('friendlies')
     friendly_requests = conn.execute('SELECT * FROM friendlies').fetchall()
     conn.close()
@@ -207,5 +216,4 @@ update_thread = threading.Thread(target=commHandler.update)
 update_thread.start()
 
 serve(app, host="0.0.0.0", port=5000)
-# app.run(host='0.0.0.0')
 update_thread.join()

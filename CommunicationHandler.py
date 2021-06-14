@@ -21,7 +21,7 @@ class CommunicationHandler():
 
     def update(self): # functions that need to be checked regularly
         while True:
-            print('[comHandler]')
+            print('[CommHandler][update]')
             # self.send_friendly_request()
             self.receive_tournament_update()
 
