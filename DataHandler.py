@@ -79,21 +79,20 @@ class DataHandler():
 
         # write csv to database, update calendar
         if (init): cursor.execute('DELETE FROM schedule')  # delete contents to avoid doubles
-        with open('data/' + filename, 'r') as csv_file:
-            reader = csv.reader(csv_file, delimiter=',')
-            sortedreader = sorted(reader, key=lambda row: int(row[self.csv_format['time']]), reverse=False)
-            for data in sortedreader:
-                referee = self.get_referee(data[self.csv_format['time']])  # get referee for the match
-                day, data[self.csv_format['time']] = self.hour_to_date(int(data[self.csv_format['time']]))
-                data[self.csv_format['field']] = self.field_number_to_letter(int(data[self.csv_format['field']]))
-                cursor.execute(
-                    'INSERT INTO schedule(day, teamA, teamB, starttime, field, referee) VALUES (?,?,?,?,?,?)',
-                    (day, data[self.csv_format['teamA']], data[self.csv_format['teamB']], data[self.csv_format['time']],
-                     data[self.csv_format['field']], referee))
-                # self.calHandler.write_event_to_calendar(teamA=data[self.csv_format['teamA']], teamB=data[self.csv_format['teamB']], field=data[self.csv_format['field']],
-                # date=day, time=data[self.csv_format['time']], referee=referee, type='match')
-            conn.commit()
-            conn.close()
+        reader = csv.reader(open('data/' + filename, 'r'), delimiter=',')
+        # sortedreader = sorted(reader, key=lambda row: int(row[self.csv_format['time']]), reverse=False)
+        for data in reader:
+            referee = self.get_referee(data[self.csv_format['time']])  # get referee for the match
+            day, data[self.csv_format['time']] = self.hour_to_date(int(data[self.csv_format['time']]))
+            data[self.csv_format['field']] = self.field_number_to_letter(int(data[self.csv_format['field']]))
+            cursor.execute(
+                'INSERT INTO schedule(day, teamA, teamB, starttime, field, referee) VALUES (?,?,?,?,?,?)',
+                (day, data[self.csv_format['teamA']], data[self.csv_format['teamB']], data[self.csv_format['time']],
+                 data[self.csv_format['field']], referee))
+            # self.calHandler.write_event_to_calendar(teamA=data[self.csv_format['teamA']], teamB=data[self.csv_format['teamB']], field=data[self.csv_format['field']],
+            # date=day, time=data[self.csv_format['time']], referee=referee, type='match')
+        conn.commit()
+        conn.close()
 
     def update_tournament_db(self):
         if path.exists('data/new_match.csv'):
@@ -119,7 +118,10 @@ class DataHandler():
             day, hour = self.date_to_hour(date + ' ' + time)
             writer.writerow([row['teamA'], row['teamB'], field, day, hour, row['scoreTeamA'], row['scoreTeamB']])
 
-    def update_team_availability(self, type, init=False, name='None', data=[]):
+    def update_team_availability(self, type, init=False, name='None', data=None):
+        if data is None:
+            data = []
+
         if (init == True):
             # set base availability for all teams
             base = list(csv.reader(open('data/team_availability_base.csv', 'r'), delimiter=','))

@@ -47,7 +47,7 @@ def tournament_json():
 def tournament():
     print('[tournament_overview]')
     conn = dataHandler.get_db_connection('schedule')
-    schedule = conn.execute('SELECT * FROM schedule').fetchall()
+    schedule = conn.execute('SELECT * FROM schedule ORDER BY day, starttime').fetchall()
     conn.close()
     return render_template('tournament_overview.html', schedule=schedule)
 
