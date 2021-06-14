@@ -5,6 +5,7 @@ from DataHandler import DataHandler
 from CommunicationHandler import CommunicationHandler
 import threading
 import json
+from waitress import serve
 
 app = Flask(__name__)
 app.config["DEBUG"] = False
@@ -24,6 +25,7 @@ dataHandler.schedule_csv_to_db(name='schedule', init=True)
 ###############################################################
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    print('[index]')
     return render_template('home.html')
 
 
@@ -202,7 +204,8 @@ def request_overview():
 ############################# RUN #############################
 ###############################################################
 update_thread = threading.Thread(target=commHandler.update)
-# update_thread.start()
+update_thread.start()
 
-app.run(host='0.0.0.0')
-# update_thread.join()
+serve(app, host="0.0.0.0", port=5000)
+# app.run(host='0.0.0.0')
+update_thread.join()
