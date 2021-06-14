@@ -1,11 +1,9 @@
-from datetime import datetime
-from os import popen
-from re import sub
-import subprocess
 import threading
-from DataHandler import DataHandler
-from CalendarHandler import CalendarHandler
 import time
+from datetime import datetime
+
+from CalendarHandler import CalendarHandler
+from DataHandler import DataHandler
 
 
 class CommunicationHandler():

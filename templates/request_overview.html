@@ -7,6 +7,7 @@ margin-top: 0.67em;
 display: block;
 font-size: 3em;
 }
+
 </style>
 
 <h1>{% block title %} Overview of friendly requests {% endblock %}</h1>
@@ -17,16 +18,16 @@ font-size: 3em;
         <th>Team A</th>
         <th>Team B</th>
         <th>Status</th>
-  </tr>
+    </tr>
     {% for friendly in friendlies %}
-        <tr>
-            <td>{{friendly['day']}}</td>
-            <td>{{friendly['starttime']}}</td>
-            <td>{{friendly['teamA']}}</td>
-            <td>{{friendly['teamB']}}</td>
-            <td>{{friendly['status']}}</td>
-            <!-- <td>{{friendly['timestamp']}}</td> -->
-        </tr>
+    <tr>
+        <td>{{friendly['day']}}</td>
+        <td>{{friendly['starttime']}}</td>
+        <td>{{friendly['teamA']}}</td>
+        <td>{{friendly['teamB']}}</td>
+        <td>{{friendly['status']}}</td>
+        <!-- <td>{{friendly['timestamp']}}</td> -->
+    </tr>
     {% endfor %}
 </table>
 

@@ -7,50 +7,51 @@ margin-top: 0.67em;
 display: block;
 font-size: 3em;
 }
+
 </style>
 
 <h1>{% block title %} Check friendly request {% endblock %}</h1>
 <p>Please check if the friendly request is correct. If it is not, press cancel. </p>
 <form method="post">
 
-<!--  Team A-->
-  <div class="form-group">
-    <label for="team_a">Team A</label>
-    <input type="text" name="team_a" id="team_a"
-           placeholder="Team A" class="form-control"
-           value="{{team_a }}" disabled/>
-  </div>
+    <!--  Team A-->
+    <div class="form-group">
+        <label for="team_a">Team A</label>
+        <input type="text" name="team_a" id="team_a"
+               placeholder="Team A" class="form-control"
+               value="{{team_a }}" disabled/>
+    </div>
 
-<!--  Team B-->
-  <div class="form-group">
-    <label for="team_b">Team B</label>
-    <input type="text" name="team_b" id="team_b"
-           placeholder="Team B" class="form-control"
-           value="{{team_b}}" disabled/>
-  </div>
+    <!--  Team B-->
+    <div class="form-group">
+        <label for="team_b">Team B</label>
+        <input type="text" name="team_b" id="team_b"
+               placeholder="Team B" class="form-control"
+               value="{{team_b}}" disabled/>
+    </div>
 
-<!--  Match date-->
-  <div class="form-group">
-    <label for="date">Match date</label>
-    <input type="date" name="date" id="date"
-           min="2021-06-14" max="2021-06-27"
-           class="form-control"
-           value="{{date}}" disabled/>
-  </div>
+    <!--  Match date-->
+    <div class="form-group">
+        <label for="date">Match date</label>
+        <input type="date" name="date" id="date"
+               min="2021-06-14" max="2021-06-27"
+               class="form-control"
+               value="{{date}}" disabled/>
+    </div>
 
-<!--  Match time -->
-  <div class="form-group">
-    <label for="time">Match time (UTC)</label>
-    <input type="time" name="time" id="time"
-           class="form-control" step="3600"
-           value="{{starttime}}" disabled/>
-  </div>
+    <!--  Match time -->
+    <div class="form-group">
+        <label for="time">Match time (UTC)</label>
+        <input type="time" name="time" id="time"
+               class="form-control" step="3600"
+               value="{{starttime}}" disabled/>
+    </div>
 
-<!--  Submit button-->
-  <div class = "flex">
-    <button type="submit" name="submit" value="submit" class="btn btn-primary">Submit</button>
-    <button type="submit" name="submit" value="cancel" class="btn btn-primary">Cancel</button>
-  </div>
+    <!--  Submit button-->
+    <div class="flex">
+        <button type="submit" name="submit" value="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" name="submit" value="cancel" class="btn btn-primary">Cancel</button>
+    </div>
 
 </form>
 {% endblock %}

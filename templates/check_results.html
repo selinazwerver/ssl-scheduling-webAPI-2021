@@ -7,40 +7,41 @@ margin-top: 0.67em;
 display: block;
 font-size: 3em;
 }
+
 </style>
 
 <h1>{% block title %} Check match results {% endblock %}</h1>
 <p>Please check if the results are correct. If they are not, press cancel.</p>
 <form method="post">
-<div className="inputBox">
-  <div class = "flex">
-    <label for="date">Date</label>
-    <input type="text" name="date" id="date"
-           value="{{date}}" disabled/>
-    <label for="time">Start time</label>
-    <input type="time" name="time" id="time"
-           value="{{starttime}}" disabled/>
-  </div>
-  <div class = "flex">
-    <label for="team_a">Team A</label>
-    <input type="text" name="team_a" id="team_a"
-           value="{{team_a}}" disabled/>
-      <label for="score_a">Score</label>
-      <input type="number" name="score_a" id="score_a"
-             value="{{score_a}}" disabled/>
+    <div className="inputBox">
+        <div class="flex">
+            <label for="date">Date</label>
+            <input type="text" name="date" id="date"
+                   value="{{date}}" disabled/>
+            <label for="time">Start time</label>
+            <input type="time" name="time" id="time"
+                   value="{{starttime}}" disabled/>
+        </div>
+        <div class="flex">
+            <label for="team_a">Team A</label>
+            <input type="text" name="team_a" id="team_a"
+                   value="{{team_a}}" disabled/>
+            <label for="score_a">Score</label>
+            <input type="number" name="score_a" id="score_a"
+                   value="{{score_a}}" disabled/>
+        </div>
+        <div class="flex">
+            <label for="team_b">Team B</label>
+            <input type="text" name="team_b" id="team_b"
+                   value="{{team_b}}" disabled/>
+            <label for="score_b">Score</label>
+            <input type="number" name="score_b" id="score_b"
+                   value="{{score_b}}" disabled/>
+        </div>
+        <div class="flex">
+            <button type="submit" name="submit" value="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" name="submit" value="cancel" class="btn btn-primary">Cancel</button>
+        </div>
     </div>
-    <div class = "flex">
-      <label for="team_b">Team B</label>
-      <input type="text" name="team_b" id="team_b"
-             value="{{team_b}}" disabled/>
-      <label for="score_b">Score</label>
-      <input type="number" name="score_b" id="score_b"
-             value="{{score_b}}" disabled/>
-    </div>
-  <div class = "flex">
-    <button type="submit" name="submit" value="submit" class="btn btn-primary">Submit</button>
-    <button type="submit" name="submit" value="cancel" class="btn btn-primary">Cancel</button>
-  </div>
-</div>
 </form>
 {% endblock %}

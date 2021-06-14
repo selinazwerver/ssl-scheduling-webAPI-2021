@@ -6,11 +6,14 @@ margin-top: 0.67em;
 display: block;
 font-size: 3em;
 }
+
 </style>
 
 {% block content %}
 <h1>{% block title %} Overview of matches {% endblock %}</h1>
-<p>Here you can see an overview of the matches that are/will be played in the tournament. The first referee is the main referee, the second serves as a second opinion or back-up referee. If you are not able to referee the match that your team is scheduled for, please contact the OC.</p>
+<p>Here you can see an overview of the matches that are/will be played in the tournament. The first referee is the main
+    referee, the second serves as a second opinion or back-up referee. If you are not able to referee the match that
+    your team is scheduled for, please contact the OC.</p>
 <table style="width:100%">
     <tr>
         <th>Date</th>
@@ -21,18 +24,18 @@ font-size: 3em;
         <th>Team B</th>
         <th>Score Team B</th>
         <th>Referees</th>
-  </tr>
+    </tr>
     {% for match in schedule %}
-        <tr>
-            <td>{{match['day']}}</td>
-            <td>{{match['starttime']}}</td>
-            <td>{{match['field']}}</td>
-            <td>{{match['teamA']}}</td>
-            <td>{{match['scoreTeamA']}}</td>
-            <td>{{match['teamB']}}</td>
-            <td>{{match['scoreTeamB']}}</td>
-            <td>{{match['referee']}}</td>
-        </tr>
+    <tr>
+        <td>{{match['day']}}</td>
+        <td>{{match['starttime']}}</td>
+        <td>{{match['field']}}</td>
+        <td>{{match['teamA']}}</td>
+        <td>{{match['scoreTeamA']}}</td>
+        <td>{{match['teamB']}}</td>
+        <td>{{match['scoreTeamB']}}</td>
+        <td>{{match['referee']}}</td>
+    </tr>
     {% endfor %}
 </table>
 

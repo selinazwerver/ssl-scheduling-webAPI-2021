@@ -1,9 +1,10 @@
-import sqlite3
 import csv
-from datetime import datetime, timedelta
 import math
 import os
+import sqlite3
+from datetime import datetime, timedelta
 from os import path
+
 from CalendarHandler import CalendarHandler
 
 
