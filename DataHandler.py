@@ -83,7 +83,9 @@ class DataHandler():
         reader = csv.reader(open('data/' + filename, 'r'), delimiter=',')
         # sortedreader = sorted(reader, key=lambda row: int(row[self.csv_format['time']]), reverse=False)
         for data in reader:
+            # get referees
             referee = self.get_referee(data[self.csv_format['time']])  # get referee for the match
+
             day, data[self.csv_format['time']] = self.hour_to_date(int(data[self.csv_format['time']]))
             data[self.csv_format['field']] = self.field_number_to_letter(int(data[self.csv_format['field']]))
             cursor.execute(
@@ -167,7 +169,7 @@ class DataHandler():
         availability = list(reader)
         available_teams = []
         for row in availability:
-            if int(row[int(hour) + 1]) == 1:
+            if (int(row[int(hour) + 1]) == 1) and (row[0] != 'MRL'):
                 available_teams.append(row[0])
 
         return available_teams
