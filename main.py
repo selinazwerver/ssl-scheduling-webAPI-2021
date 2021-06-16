@@ -16,8 +16,8 @@ dataHandler = DataHandler()
 commHandler = CommunicationHandler()
 
 # Initialise database and availability
-dataHandler.update_team_availability(name='schedule', init=True, type='csv')
-dataHandler.schedule_csv_to_db(name='schedule', init=True)
+# dataHandler.update_team_availability(name='schedule', init=True, type='csv')
+# dataHandler.schedule_csv_to_db(name='schedule', init=True)
 
 
 ###############################################################

@@ -1,6 +1,7 @@
 import threading
 import time
 from datetime import datetime
+from subprocess import Popen, PIPE
 
 from CalendarHandler import CalendarHandler
 from DataHandler import DataHandler
@@ -27,6 +28,11 @@ class CommunicationHandler():
                 self.lock.acquire()
                 self.dataHandler.export_schedule_to_csv()
                 # run some binary I guess
+                process = Popen(['data/ssl-scheduling/data/script.sh'], stdout=PIPE, stderr = PIPE)
+                stdout, stderr = process.communicate()
+                print(stdout)
+                print(stderr)
+                process.wait()
                 self.lock.release()
                 print('[CommHandler][update] Done sending new match results')
 
