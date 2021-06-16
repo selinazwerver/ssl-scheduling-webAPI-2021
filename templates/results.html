@@ -7,80 +7,81 @@ margin-top: 0.67em;
 display: block;
 font-size: 3em;
 }
+
 </style>
 
 <h1>{% block title %} Input match results {% endblock %}</h1>
 <p>Note: the results can only be entered after the match has started.</p>
 <form method="post">
-<div className="inputBox">
+    <div className="inputBox">
 
-<!--  Date & Time-->
-  <div class = "flex">
-    <label for="date">Date</label>
-    <input type="date" name="date" id="date"
-           min="2021-06-21" max="2021-06-27"
-           value="{{ request.form['date'] }}"/>
-    <label for="time">Start time</label>
-    <input type="time" name="time" id="time" step="3600"
-           value="{{ request.form['time'] }}"/>
-  </div>
+        <!--  Date & Time-->
+        <div class="flex">
+            <label for="date">Date</label>
+            <input type="date" name="date" id="date"
+                   min="2021-06-21" max="2021-06-27"
+                   value="{{ request.form['date'] }}"/>
+            <label for="time">Start time</label>
+            <input type="time" name="time" id="time" step="3600"
+                   value="{{ request.form['time'] }}"/>
+        </div>
 
-<!--  Team A-->
-  <div class = "flex">
-    <label for="team_a">Team A</label>
-    <select id="team_a" name="team_a">
-      <option value="ER-Force">ER-Force</option>
-      <option value="KgpKubs">KgpKubs</option>
-      <option value="MRL">MRL</option>
-      <option value="KIKS">KIKS</option>
-      <option value="Omid">Omid</option>
-      <option value="RoboCIn">RoboCIn</option>
-      <option value="RoboDragons">RoboDragons</option>
-      <option value="RoboFEI">RoboFEI</option>
-      <option value="RoboJackets">RoboJackets</option>
-      <option value="RoboTeam Twente">RoboTeam Twente</option>
-      <option value="SRC">SRC</option>
-      <option value="TIGERs Mannheim">TIGERs Mannheim</option>
-      <option value="Tritons RCSC">Tritons RCSC</option>
-      <option value="UBC Thunderbots">UBC Thunderbots</option>
-      <option value="URoboRus">URoboRus</option>
-      <option value="RoboIME">RoboIME</option>
-    </select>
-<!--    <input type="text" name="team_a" id="team_a"-->
-<!--           value="{{ request.form['team_a'] }}"/>-->
-      <label for="score_a">Score</label>
-      <input type="number" name="score_a" id="score_a"
-             value="{{ request.form['score_a'] }}"/>
-    </div>
+        <!--  Team A-->
+        <div class="flex">
+            <label for="team_a">Team A</label>
+            <select id="team_a" name="team_a">
+                <option value="ER-Force">ER-Force</option>
+                <option value="KgpKubs">KgpKubs</option>
+                <option value="MRL">MRL</option>
+                <option value="KIKS">KIKS</option>
+                <option value="Omid">Omid</option>
+                <option value="RoboCIn">RoboCIn</option>
+                <option value="RoboDragons">RoboDragons</option>
+                <option value="RoboFEI">RoboFEI</option>
+                <option value="RoboIME">RoboIME</option>
+                <option value="RoboJackets">RoboJackets</option>
+                <option value="RoboTeam Twente">RoboTeam Twente</option>
+                <option value="SRC">SRC</option>
+                <option value="TIGERs Mannheim">TIGERs Mannheim</option>
+                <option value="Tritons RCSC">Tritons RCSC</option>
+                <option value="UBC Thunderbots">UBC Thunderbots</option>
+                <option value="URoboRus">URoboRus</option>
+            </select>
+            <!--    <input type="text" name="team_a" id="team_a"-->
+            <!--           value="{{ request.form['team_a'] }}"/>-->
+            <label for="score_a">Score</label>
+            <input type="number" name="score_a" id="score_a"
+                   value="{{ request.form['score_a'] }}"/>
+        </div>
 
-<!--  Team B-->
-    <div class = "flex">
-      <label for="team_b">Team B</label>
-      <select id="team_b" name="team_b">
-      <option value="ER-Force">ER-Force</option>
-      <option value="KgpKubs">KgpKubs</option>
-      <option value="MRL">MRL</option>
-      <option value="KIKS">KIKS</option>
-      <option value="Omid">Omid</option>
-      <option value="RoboCIn">RoboCIn</option>
-      <option value="RoboDragons">RoboDragons</option>
-      <option value="RoboFEI">RoboFEI</option>
-      <option value="RoboJackets">RoboJackets</option>
-      <option value="RoboTeam Twente">RoboTeam Twente</option>
-      <option value="SRC">SRC</option>
-      <option value="TIGERs Mannheim">TIGERs Mannheim</option>
-      <option value="Tritons RCSC">Tritons RCSC</option>
-      <option value="UBC Thunderbots">UBC Thunderbots</option>
-      <option value="URoboRus">URoboRus</option>
-      <option value="RoboIME">RoboIME</option>
-    </select>
-      <label for="score_b">Score</label>
-      <input type="number" name="score_b" id="score_b"
-             value="{{ request.form['score_b'] }}"/>
+        <!--  Team B-->
+        <div class="flex">
+            <label for="team_b">Team B</label>
+            <select id="team_b" name="team_b">
+                <option value="ER-Force">ER-Force</option>
+                <option value="KgpKubs">KgpKubs</option>
+                <option value="MRL">MRL</option>
+                <option value="KIKS">KIKS</option>
+                <option value="Omid">Omid</option>
+                <option value="RoboCIn">RoboCIn</option>
+                <option value="RoboDragons">RoboDragons</option>
+                <option value="RoboFEI">RoboFEI</option>
+                <option value="RoboIME">RoboIME</option>
+                <option value="RoboJackets">RoboJackets</option>
+                <option value="RoboTeam Twente">RoboTeam Twente</option>
+                <option value="SRC">SRC</option>
+                <option value="TIGERs Mannheim">TIGERs Mannheim</option>
+                <option value="Tritons RCSC">Tritons RCSC</option>
+                <option value="UBC Thunderbots">UBC Thunderbots</option>
+                <option value="URoboRus">URoboRus</option>
+            </select>
+            <label for="score_b">Score</label>
+            <input type="number" name="score_b" id="score_b"
+                   value="{{ request.form['score_b'] }}"/>
+        </div>
+        <div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
     </div>
-    <div>
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </div>
-</div>
 </form>
 {% endblock %}
