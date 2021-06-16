@@ -5,6 +5,8 @@ from datetime import datetime
 from CalendarHandler import CalendarHandler
 from DataHandler import DataHandler
 
+from subprocess import Popen, PIPE
+
 
 class CommunicationHandler():
     def __init__(self):
@@ -56,7 +58,7 @@ class CommunicationHandler():
             # self.dataHandler.export_friendly_to_csv(request)
             # export friendly date to hour
             day, hour = self.dataHandler.date_to_hour(request['day'] + ' ' + request['starttime'])
-            print('[CommHandler][send_friendly_request] Sending new friendly request')
+            print('[CommHandler][send_friendly_request] Sending new friendly request, hour =', hour)
             self.lock.acquire()
             result, newtime, field = 'accepted', 0, 0  # replace by binary call when we have that
             # popen = subprocess.Popen('name -c firendly_request.csv'.split(), stdout=subprocess.PIPE)
@@ -77,18 +79,14 @@ class CommunicationHandler():
                 cursor.execute(
                     'UPDATE friendlies SET status = ? WHERE status = ? AND day = ? AND teamA = ? AND teamB = ? AND starttime = ?',
                     ('Accepted', 'Pending', request['day'], request['teamA'], request['teamB'], request['starttime']))
-                conn.commit()
-                conn.close()
-                return
+            
             elif result == 'denied':  # request is denied, update only database
                 conn = self.dataHandler.get_db_connection('friendlies')
                 cursor = conn.cursor()
                 cursor.execute(
                     'UPDATE friendlies SET status = ? WHERE status = ? AND day = ? AND teamA = ? AND teamB = ? AND starttime = ?',
                     ('Denied', 'Pending', request['day'], request['teamA'], request['teamB'], request['starttime']))
-                conn.commit()
-                conn.close()
-                return
+
             elif result == 'try again':  # update timestamp to new time
                 newday, newtime = self.dataHandler.hour_to_date(newtime)
                 conn = self.dataHandler.get_db_connection('friendlies')
@@ -97,9 +95,10 @@ class CommunicationHandler():
                     'UPDATE friendlies SET timestamp = ? WHERE status = ? AND day = ? AND teamA = ? AND teamB = ? AND starttime = ?',
                     (newday + ' ' + newtime, 'Pending', request['day'], request['teamA'], request['teamB'],
                      request['starttime']))
-                conn.commit()
-                conn.close()
-                return
+
+            conn.commit()
+            conn.close()
+            return
 
     def receive_tournament_update(self):
         self.dataHandler.update_tournament_db()

@@ -39,9 +39,9 @@ def tournament_json():
     print('[tournament_json]')
     conn = dataHandler.get_db_connection('schedule')
     cursor = conn.cursor()
-    test = cursor.execute('SELECT day, starttime, referee FROM schedule').fetchall()
+    schedule = cursor.execute('SELECT day, starttime, referee FROM schedule').fetchall()
     conn.close()
-    return json.dumps([dict(ix) for ix in test])
+    return json.dumps([dict(ix) for ix in schedule])
 
 
 ###############################################################
