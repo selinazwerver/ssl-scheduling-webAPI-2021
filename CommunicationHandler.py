@@ -6,8 +6,6 @@ from subprocess import Popen, PIPE
 from CalendarHandler import CalendarHandler
 from DataHandler import DataHandler
 
-from subprocess import Popen, PIPE
-
 
 class CommunicationHandler():
     def __init__(self):
@@ -27,7 +25,7 @@ class CommunicationHandler():
                 self.new_match_results = False
                 self.lock.acquire()
                 self.dataHandler.export_schedule_to_csv()
-                # run some binary I guess
+                # Send new results to scheduler
                 process = Popen(['data/ssl-scheduling/data/script.sh'], stdout=PIPE, stderr = PIPE)
                 stdout, stderr = process.communicate()
                 print(stdout)
