@@ -161,8 +161,8 @@ def request_friendly():
             flash('Date is required!')
         elif not starttime:
             flash('Time is required!')
-        elif (datetime.now() < datetime.strptime('2021-06-23 00:00', '%Y-%m-%d %H:%M')):
-            flash('You can only request friendlies after 23-06-2021!')
+        # elif (datetime.now() < datetime.strptime('2021-06-23 00:00', '%Y-%m-%d %H:%M')):
+        #     flash('You can only request friendlies after 23-06-2021!')
         else:
             return redirect(url_for('check_friendly', team_a=team_a, team_b=team_b, date=date, starttime=starttime))
 
@@ -184,12 +184,12 @@ def check_friendly():
     # put the results in the database
     if (request.method == 'POST') and (request.form['submit'] == 'submit'):
         # insert request in friendly database
-        # conn = dataHandler.get_db_connection('friendlies')
-        # cur = conn.cursor()
-        # conn.execute('INSERT INTO friendlies (day, teamA, teamB, starttime, status, timestamp) VALUES (?,?,?,?,?,?)',
-        #  (date, team_a, team_b, starttime, 'Pending', datetime.now()))
-        # conn.commit()
-        # conn.close()
+        conn = dataHandler.get_db_connection('friendlies')
+        cur = conn.cursor()
+        conn.execute('INSERT INTO friendlies (day, teamA, teamB, starttime, status, timestamp) VALUES (?,?,?,?,?,?)',
+         (date, team_a, team_b, starttime, 'Pending', datetime.now()))
+        conn.commit()
+        conn.close()
         return redirect(url_for('request_overview'))
 
     return render_template('check_friendly.html', team_a=team_a, team_b=team_b, date=date,

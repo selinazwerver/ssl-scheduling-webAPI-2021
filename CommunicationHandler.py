@@ -17,7 +17,7 @@ class CommunicationHandler():
     def update(self):  # functions that need to be checked regularly
         while True:
             print('[CommHandler][update]')
-            # self.send_friendly_request()
+            self.send_friendly_request()
             self.receive_tournament_update()
 
             if self.new_match_results:
@@ -26,7 +26,7 @@ class CommunicationHandler():
                 self.lock.acquire()
                 self.dataHandler.export_schedule_to_csv()
                 # Send new results to scheduler
-                process = Popen(['data/ssl-scheduling/data/script.sh'], stdout=PIPE, stderr = PIPE)
+                process = Popen(['data/ssl-scheduling/data/script.sh'], stdout=PIPE, stderr=PIPE)
                 stdout, stderr = process.communicate()
                 print(stdout)
                 print(stderr)
@@ -59,45 +59,48 @@ class CommunicationHandler():
         if request == 0:
             return
         else:
-            # self.dataHandler.export_friendly_to_csv(request)
             # export friendly date to hour
             day, hour = self.dataHandler.date_to_hour(request['day'] + ' ' + request['starttime'])
             print('[CommHandler][send_friendly_request] Sending new friendly request, hour =', hour)
             self.lock.acquire()
-            result, newtime, field = 'accepted', 0, 0  # replace by binary call when we have that
-            # popen = subprocess.Popen('name -c firendly_request.csv'.split(), stdout=subprocess.PIPE)
-            # popen.wait()
-            # result, newtime, field = popen.stdout.read()
+            result, newtime, field = 'try again', 48, 0  # replace by part below when we have that
+            # process = Popen(['data/ssl-scheduling/data/script.sh'], stdout=PIPE, stderr=PIPE)
+            # stdout, stderr = process.communicate()
+            # print(stdout)
+            # print(stderr)
+            # process.wait()
             self.lock.release()
-            print('[CommHandler][send_friendly_request] Friendly request is:', result)
+            print('[CommHandler][send_friendly_request] Result request:', result)
 
-            if result == 'accepted':  # request is accepted, update calendar and database
+            conn = self.dataHandler.get_db_connection('friendlies')
+            cursor = conn.cursor()
+
+            if result == 'accepted':  # request is accepted, update availability, calendar and database
                 self.dataHandler.update_team_availability(type='list', data=[request['teamA'], request['teamB'],
                                                                              hour])  # update availability
-                field = self.dataHandler.field_number_to_letter(field)
                 # self.calHandler.write_event_to_calendar(teamA=request['teamA'], teamB=request['teamB'],
                 # date=request['day'], time=request['starttime'],
-                # field=field, type='friendly')
-                conn = self.dataHandler.get_db_connection('friendlies')
-                cursor = conn.cursor()
+                # field=self.dataHandler.field_number_to_letter(field), type='friendly')
+
+                # update database
                 cursor.execute(
                     'UPDATE friendlies SET status = ? WHERE status = ? AND day = ? AND teamA = ? AND teamB = ? AND starttime = ?',
                     ('Accepted', 'Pending', request['day'], request['teamA'], request['teamB'], request['starttime']))
-            
+
             elif result == 'denied':  # request is denied, update only database
-                conn = self.dataHandler.get_db_connection('friendlies')
-                cursor = conn.cursor()
                 cursor.execute(
                     'UPDATE friendlies SET status = ? WHERE status = ? AND day = ? AND teamA = ? AND teamB = ? AND starttime = ?',
                     ('Denied', 'Pending', request['day'], request['teamA'], request['teamB'], request['starttime']))
 
-            elif result == 'try again':  # update timestamp to new time
+            elif result == 'try again':  # update timestamp in the database to new time
+                # newtime is in absolute hours, convert to datetime structure
+                print('[CommHandler][send_friendly_request] Try again at hour:', newtime)
                 newday, newtime = self.dataHandler.hour_to_date(newtime)
-                conn = self.dataHandler.get_db_connection('friendlies')
-                cursor = conn.cursor()
+                print('[CommHandler][send_friendly_request] Try again at date:', newday, newtime)
+
                 cursor.execute(
                     'UPDATE friendlies SET timestamp = ? WHERE status = ? AND day = ? AND teamA = ? AND teamB = ? AND starttime = ?',
-                    (newday + ' ' + newtime, 'Pending', request['day'], request['teamA'], request['teamB'],
+                    (newday + ' ' + newtime + ':0.0', 'Pending', request['day'], request['teamA'], request['teamB'],
                      request['starttime']))
 
             conn.commit()
