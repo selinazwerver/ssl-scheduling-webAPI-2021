@@ -167,8 +167,8 @@ def request_friendly():
             flash('Date is required!')
         elif not starttime:
             flash('Time is required!')
-        # elif (datetime.now() < datetime.strptime('2021-06-23 00:00', '%Y-%m-%d %H:%M')):
-        #     flash('You can only request friendlies after 23-06-2021!')
+        # elif (datetime.now() < datetime.strptime('2021-06-21 00:00', '%Y-%m-%d %H:%M')):
+        #     flash('You can only request friendlies after 21-06-2021!')
         else:
             return redirect(url_for('check_friendly', team_a=team_a, team_b=team_b, date=date, starttime=starttime))
 
@@ -312,7 +312,7 @@ def check_referee():
 ############################# RUN #############################
 ###############################################################
 update_thread = threading.Thread(target=commHandler.update)
-update_thread.start()
+# update_thread.start()
 
 serve(app, host="0.0.0.0", port=5000)
-update_thread.join()
+# update_thread.join()

@@ -18,6 +18,7 @@ font-size: 3em;
         <th>Team A</th>
         <th>Team B</th>
         <th>Status</th>
+        <th>Field</th>
     </tr>
     {% for friendly in friendlies %}
     <tr>
@@ -26,7 +27,7 @@ font-size: 3em;
         <td>{{friendly['teamA']}}</td>
         <td>{{friendly['teamB']}}</td>
         <td>{{friendly['status']}}</td>
-        <!-- <td>{{friendly['timestamp']}}</td> -->
+        <td>{{friendly['field']}}</td>
     </tr>
     {% endfor %}
 </table>
