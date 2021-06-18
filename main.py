@@ -19,11 +19,11 @@ commHandler = CommunicationHandler()
 # Initialise database and availability
 dataHandler.update_team_availability(name='schedule', init=True, type='csv')
 dataHandler.schedule_csv_to_db(name='schedule', init=True)
-process = Popen(['data/ssl-scheduling/data/reset.sh'], stdout=PIPE, stderr=PIPE)
-stdout, stderr = process.communicate()
-print(stdout)
-print(stderr)
-process.wait()
+# process = Popen(['data/ssl-scheduling/data/reset.sh'], stdout=PIPE, stderr=PIPE)
+# stdout, stderr = process.communicate()
+# print(stdout)
+# print(stderr)
+# process.wait()
 
 
 ###############################################################

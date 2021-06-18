@@ -79,7 +79,11 @@ class DataHandler():
         cursor = conn.cursor()
 
         # write csv to database, update calendar
-        if (init): cursor.execute('DELETE FROM schedule')  # delete contents to avoid doubles
+        if (init): 
+            cursor.execute('DELETE FROM schedule')  # delete contents to avoid doubles
+            schedule_updated = open('data/schedule_updated.csv', 'w+')
+            schedule_updated.close()
+
         reader = csv.reader(open('data/' + filename, 'r'), delimiter=',')
         # sortedreader = sorted(reader, key=lambda row: int(row[self.csv_format['time']]), reverse=False)
         for data in reader:

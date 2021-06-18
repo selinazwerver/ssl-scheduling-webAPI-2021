@@ -91,7 +91,7 @@ class CommunicationHandler():
                                                                              hour])  # update availability
                 
                 # write friendly to calendar
-                field=self.dataHandler.field_number_to_letter(field)
+                field = self.dataHandler.field_number_to_letter(int(field))
                 self.calHandler.write_event_to_calendar(teamA=request['teamA'], teamB=request['teamB'],
                 date=request['day'], time=request['starttime'], field=field, type='friendly')
 
