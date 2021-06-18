@@ -151,8 +151,12 @@ class DataHandler():
             availability[self.team_names_to_row[data[1]]][int(data[2]) + 1] = 0
         elif (type == 'ref'):
             availability[self.team_names_to_row[data[0]]][int(data[1]) + 1] = 0
+        elif (type == 'oldref'):
+            availability[self.team_names_to_row[data[0]]][int(data[1]) + 1] = 1
 
         writer.writerows(availability)
+
+        print(availability)
 
         # copy new availability to the copied file
         csv.writer(open('data/team_availability_copy.csv', 'w', newline='')).writerows(availability)

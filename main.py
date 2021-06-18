@@ -19,11 +19,11 @@ commHandler = CommunicationHandler()
 # Initialise database and availability
 dataHandler.update_team_availability(name='schedule', init=True, type='csv')
 dataHandler.schedule_csv_to_db(name='schedule', init=True)
-process = Popen(['data/ssl-scheduling/data/reset.sh'], stdout=PIPE, stderr=PIPE)
-stdout, stderr = process.communicate()
-print(stdout)
-print(stderr)
-process.wait()
+# process = Popen(['data/ssl-scheduling/data/reset.sh'], stdout=PIPE, stderr=PIPE)
+# stdout, stderr = process.communicate()
+# print(stdout)
+# print(stderr)
+# process.wait()
 
 
 ###############################################################
@@ -74,12 +74,12 @@ def results():
     cursor = conn.cursor()
 
     if (request.method == 'POST'):
-        team_a = request.form['team_a']
-        team_b = request.form['team_b']
-        date = request.form['date']
-        starttime = request.form['time']
-        score_a = request.form['score_a']
-        score_b = request.form['score_b']
+        team_a      = request.form['team_a']
+        team_b      = request.form['team_b']
+        date        = request.form['date']
+        starttime   = request.form['time']
+        score_a     = request.form['score_a']
+        score_b     = request.form['score_b']
 
         print('[main][results] Got results for', team_a, '-', team_b, 'at', date, '', starttime)
 
@@ -117,12 +117,12 @@ def results():
 def check_results():
     # make sure that the results are correctly implemented
     print('[check_results]')
-    team_a = request.args['team_a']
-    team_b = request.args['team_b']
-    date = request.args['date']
-    starttime = request.args['starttime']
-    score_a = request.args['score_a']
-    score_b = request.args['score_b']
+    team_a      = request.args['team_a']
+    team_b      = request.args['team_b']
+    date        = request.args['date']
+    starttime   = request.args['starttime']
+    score_a     = request.args['score_a']
+    score_b     = request.args['score_b']
 
     # can be left out but is here for clarity; cancel puts you back to the form
     if (request.method == 'POST') and (request.form['submit'] == 'cancel'):
@@ -132,8 +132,8 @@ def check_results():
     if (request.method == 'POST') and (request.form['submit'] == 'submit'):
         conn = dataHandler.get_db_connection('schedule')
         # find row where the score must be implemented
-        cur = conn.cursor()
-        cur.execute(
+        cursor = conn.cursor()
+        cursor.execute(
             'UPDATE schedule SET scoreTeamA = ?, scoreTeamB = ? WHERE teamA = ? AND teamB = ? AND starttime = ? AND day = ?',
             (score_a, score_b, team_a, team_b, starttime, date))
         conn.commit()
@@ -153,10 +153,10 @@ def request_friendly():
     # form where teams can request a friendly match
     print('[request_friendly]')
     if request.method == 'POST':
-        team_a = request.form['team_a']
-        team_b = request.form['team_b']
-        date = request.form['date']
-        starttime = request.form['time']
+        team_a      = request.form['team_a']
+        team_b      = request.form['team_b']
+        date        = request.form['date']
+        starttime   = request.form['time']
 
         # send a warning if something is missing
         if not team_a:
@@ -178,10 +178,10 @@ def request_friendly():
 @app.route('/check_friendly', methods=['GET', 'POST'])
 def check_friendly():
     print('[check_friendly]')
-    team_a = request.args['team_a']
-    team_b = request.args['team_b']
-    date = request.args['date']
-    starttime = request.args['starttime']
+    team_a      = request.args['team_a']
+    team_b      = request.args['team_b']
+    date        = request.args['date']
+    starttime   = request.args['starttime']
 
     # can be left out but is here for clarity; cancel puts you back to the form
     if (request.method == 'POST') and (request.form['submit'] == 'cancel'):
@@ -191,8 +191,8 @@ def check_friendly():
     if (request.method == 'POST') and (request.form['submit'] == 'submit'):
         # insert request in friendly database
         conn = dataHandler.get_db_connection('friendlies')
-        cur = conn.cursor()
-        conn.execute('INSERT INTO friendlies (day, teamA, teamB, starttime, status, timestamp) VALUES (?,?,?,?,?,?)',
+        cursor = conn.cursor()
+        cursor.execute('INSERT INTO friendlies (day, teamA, teamB, starttime, status, timestamp) VALUES (?,?,?,?,?,?)',
          (date, team_a, team_b, starttime, 'Pending', datetime.now()))
         conn.commit()
         conn.close()
@@ -222,18 +222,17 @@ def replace_referee():
     cursor = conn.cursor()
 
     if request.method == 'POST':
-        team_a = request.form['team_a']
-        team_b = request.form['team_b']
-        date = request.form['date']
-        starttime = request.form['time']
-        newref1 = request.form['newref1']
-        newref2 = request.form['newref2']
+        team_a      = request.form['team_a']
+        team_b      = request.form['team_b']
+        date        = request.form['date']
+        starttime   = request.form['time']
+        newref1     = request.form['newref1']
+        newref2     = request.form['newref2']
 
         # check if combination of data exists
-        cursor.execute(
+        rows = cursor.execute(
             'SELECT rowid FROM schedule WHERE teamA = ? AND teamB = ? AND starttime = ? AND day = ?',
-            (team_a, team_b, starttime, date))
-        rows = cursor.fetchall()
+            (team_a, team_b, starttime, date)).fetchall()
 
         # send a warning if something is missing
         if not team_a:
@@ -261,12 +260,12 @@ def replace_referee():
 def check_referee():
     print('[check_referee]')
 
-    team_a = request.args['team_a']
-    team_b = request.args['team_b']
-    date = request.args['date']
-    starttime = request.args['starttime']
-    newref1 = request.args['newref1']
-    newref2 = request.args['newref2']
+    team_a      = request.args['team_a']
+    team_b      = request.args['team_b']
+    date        = request.args['date']
+    starttime   = request.args['starttime']
+    newref1     = request.args['newref1']
+    newref2     = request.args['newref2']
 
     # can be left out but is here for clarity; cancel puts you back to the form
     if (request.method == 'POST') and (request.form['submit'] == 'cancel'):
@@ -274,10 +273,26 @@ def check_referee():
 
     # put the new referees in the database
     if (request.method == 'POST') and (request.form['submit'] == 'submit'):
-        # insert new referees in schedule database
         conn = dataHandler.get_db_connection('schedule')
-        cur = conn.cursor()
-        cur.execute(
+        cursor = conn.cursor()
+
+        # retrieve previous referees
+        cursor.execute(
+            'SELECT referee FROM schedule WHERE teamA = ? AND teamB = ? AND starttime = ? AND day = ?',
+            (team_a, team_b, starttime, date))
+        for row in cursor.fetchone():
+            oldref = row
+
+        # update availability of old and new referees
+        oldref1, oldref2 = oldref.split(", ")
+        day,hour = dataHandler.date_to_hour(date + ' ' + starttime)
+        dataHandler.update_team_availability(type='oldref', init=False, name='None', data=[oldref1, hour])
+        dataHandler.update_team_availability(type='oldref', init=False, name='None', data=[oldref2, hour])
+        dataHandler.update_team_availability(type='ref', init=False, name='None', data=[newref1, hour])
+        dataHandler.update_team_availability(type='ref', init=False, name='None', data=[newref2, hour])
+
+        # insert new referees in schedule database
+        cursor.execute(
             'UPDATE schedule SET referee = ? WHERE teamA = ? AND teamB = ? AND starttime = ? AND day = ?',
             (newref1 + ', ' + newref2, team_a, team_b, starttime, date))
         conn.commit()
@@ -291,7 +306,7 @@ def check_referee():
 ############################# RUN #############################
 ###############################################################
 update_thread = threading.Thread(target=commHandler.update)
-update_thread.start()
+# update_thread.start()
 
 serve(app, host="0.0.0.0", port=5000)
-update_thread.join()
+# update_thread.join()
