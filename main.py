@@ -19,11 +19,11 @@ commHandler = CommunicationHandler()
 # Initialise database and availability
 dataHandler.update_team_availability(name='schedule', init=True, type='csv')
 dataHandler.schedule_csv_to_db(name='schedule', init=True)
-# process = Popen(['data/ssl-scheduling/data/reset.sh'], stdout=PIPE, stderr=PIPE)
-# stdout, stderr = process.communicate()
-# print(stdout)
-# print(stderr)
-# process.wait()
+process = Popen(['data/ssl-scheduling/data/reset.sh'], stdout=PIPE, stderr=PIPE)
+stdout, stderr = process.communicate()
+print(stdout)
+print(stderr)
+process.wait()
 
 
 ###############################################################
@@ -291,6 +291,12 @@ def check_referee():
         dataHandler.update_team_availability(type='ref', init=False, name='None', data=[newref1, hour])
         dataHandler.update_team_availability(type='ref', init=False, name='None', data=[newref2, hour])
 
+        # update referee counters
+        dataHandler.update_referee_counter(team=oldref1, type='old_first')
+        dataHandler.update_referee_counter(team=oldref2, type='old_first')
+        dataHandler.update_referee_counter(team=newref1, type='first')
+        dataHandler.update_referee_counter(team=newref2, type='second')
+
         # insert new referees in schedule database
         cursor.execute(
             'UPDATE schedule SET referee = ? WHERE teamA = ? AND teamB = ? AND starttime = ? AND day = ?',
@@ -306,7 +312,7 @@ def check_referee():
 ############################# RUN #############################
 ###############################################################
 update_thread = threading.Thread(target=commHandler.update)
-# update_thread.start()
+update_thread.start()
 
 serve(app, host="0.0.0.0", port=5000)
-# update_thread.join()
+update_thread.join()

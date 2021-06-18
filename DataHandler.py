@@ -156,8 +156,6 @@ class DataHandler():
 
         writer.writerows(availability)
 
-        print(availability)
-
         # copy new availability to the copied file
         csv.writer(open('data/team_availability_copy.csv', 'w', newline='')).writerows(availability)
 
@@ -222,3 +220,9 @@ class DataHandler():
         elif type == 'second':
             self.second_referee_counter[list(list(zip(*self.second_referee_counter))[0]).index(team)][1] = \
             self.second_referee_counter[list(list(zip(*self.second_referee_counter))[0]).index(team)][1] + 1
+        elif type == 'old_first':
+            self.referee_counter[list(list(zip(*self.referee_counter))[0]).index(team)][1] = \
+            self.referee_counter[list(list(zip(*self.referee_counter))[0]).index(team)][1] - 1
+        elif type == 'old_second':
+            self.second_referee_counter[list(list(zip(*self.second_referee_counter))[0]).index(team)][1] = \
+            self.second_referee_counter[list(list(zip(*self.second_referee_counter))[0]).index(team)][1] - 1
