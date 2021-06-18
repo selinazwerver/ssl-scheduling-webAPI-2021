@@ -19,14 +19,11 @@ commHandler = CommunicationHandler()
 # Initialise database and availability
 dataHandler.update_team_availability(name='schedule', init=True, type='csv')
 dataHandler.schedule_csv_to_db(name='schedule', init=True)
-<<<<<<< HEAD
-=======
 process = Popen(['data/ssl-scheduling/data/reset.sh'], stdout=PIPE, stderr=PIPE)
 stdout, stderr = process.communicate()
 print(stdout)
 print(stderr)
 process.wait()
->>>>>>> 3817dbc86d57e3dc323244cbbc1d49e73976f2c7
 
 
 ###############################################################
@@ -294,7 +291,7 @@ def check_referee():
 ############################# RUN #############################
 ###############################################################
 update_thread = threading.Thread(target=commHandler.update)
-# update_thread.start()
+update_thread.start()
 
 serve(app, host="0.0.0.0", port=5000)
-# update_thread.join()
+update_thread.join()
