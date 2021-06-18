@@ -94,8 +94,8 @@ class CommunicationHandler():
 
                 # update database
                 cursor.execute(
-                    'UPDATE friendlies SET status = ? WHERE status = ? AND day = ? AND teamA = ? AND teamB = ? AND starttime = ?',
-                    ('Accepted', 'Pending', request['day'], request['teamA'], request['teamB'], request['starttime']))
+                    'UPDATE friendlies SET status = ?, field = ? WHERE status = ? AND day = ? AND teamA = ? AND teamB = ? AND starttime = ?',
+                    ('Accepted', field, 'Pending', request['day'], request['teamA'], request['teamB'], request['starttime']))
 
             elif result == 'denied':  # request is denied, update only database
                 cursor.execute(

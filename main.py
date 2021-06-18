@@ -312,7 +312,7 @@ def check_referee():
 ############################# RUN #############################
 ###############################################################
 update_thread = threading.Thread(target=commHandler.update)
-# update_thread.start()
+update_thread.start()
 
 serve(app, host="0.0.0.0", port=5000)
-# update_thread.join()
+update_thread.join()
