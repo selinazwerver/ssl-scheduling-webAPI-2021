@@ -92,8 +92,8 @@ class DataHandler():
                 'INSERT INTO schedule(day, teamA, teamB, starttime, field, referee) VALUES (?,?,?,?,?,?)',
                 (day, data[self.csv_format['teamA']], data[self.csv_format['teamB']], data[self.csv_format['time']],
                  data[self.csv_format['field']], referee))
-            # self.calHandler.write_event_to_calendar(teamA=data[self.csv_format['teamA']], teamB=data[self.csv_format['teamB']], field=data[self.csv_format['field']],
-            # date=day, time=data[self.csv_format['time']], referee=referee, type='match')
+            self.calHandler.write_event_to_calendar(teamA=data[self.csv_format['teamA']], teamB=data[self.csv_format['teamB']], field=data[self.csv_format['field']],
+            date=day, time=data[self.csv_format['time']], referee=referee, type='match')
         conn.commit()
         conn.close()
 

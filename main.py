@@ -17,13 +17,13 @@ dataHandler = DataHandler()
 commHandler = CommunicationHandler()
 
 # Initialise database and availability
-#dataHandler.update_team_availability(name='schedule', init=True, type='csv')
-#dataHandler.schedule_csv_to_db(name='schedule', init=True)
-#process = Popen(['data/ssl-scheduling/data/reset.sh'], stdout=PIPE, stderr=PIPE)
-#stdout, stderr = process.communicate()
-#print(stdout)
-#print(stderr)
-#process.wait()
+dataHandler.update_team_availability(name='schedule', init=True, type='csv')
+dataHandler.schedule_csv_to_db(name='schedule', init=True)
+process = Popen(['data/ssl-scheduling/data/reset.sh'], stdout=PIPE, stderr=PIPE)
+stdout, stderr = process.communicate()
+print(stdout)
+print(stderr)
+process.wait()
 
 
 ###############################################################
@@ -102,8 +102,8 @@ def results():
             flash('Score of Team A is required!')
         elif not score_b:
             flash('Score of Team B is required!')
-        # elif (datetime.now () < datetime.strptime(date + ' ' + starttime, '%Y-%m-%d %H:%M')):
-        #     flash('This game has not yet started!')
+        elif (datetime.now () < datetime.strptime(date + ' ' + starttime, '%Y-%m-%d %H:%M')):
+            flash('This game has not yet started!')
         elif len(rows) == 0:
             flash('Match does not exist or score is already set')
         else: # send to 'check the results' page
@@ -167,8 +167,6 @@ def request_friendly():
             flash('Date is required!')
         elif not starttime:
             flash('Time is required!')
-        # elif (datetime.now() < datetime.strptime('2021-06-21 00:00', '%Y-%m-%d %H:%M')):
-        #     flash('You can only request friendlies after 21-06-2021!')
         else:
             return redirect(url_for('check_friendly', team_a=team_a, team_b=team_b, date=date, starttime=starttime))
 

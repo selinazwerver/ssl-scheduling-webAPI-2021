@@ -86,11 +86,14 @@ class CommunicationHandler():
             cursor = conn.cursor()
 
             if result == 'accepted':  # request is accepted, update availability, calendar and database
+                # update availability
                 self.dataHandler.update_team_availability(type='list', data=[request['teamA'], request['teamB'],
                                                                              hour])  # update availability
-                # self.calHandler.write_event_to_calendar(teamA=request['teamA'], teamB=request['teamB'],
-                # date=request['day'], time=request['starttime'],
-                # field=self.dataHandler.field_number_to_letter(field), type='friendly')
+                
+                # write friendly to calendar
+                field=self.dataHandler.field_number_to_letter(field)
+                self.calHandler.write_event_to_calendar(teamA=request['teamA'], teamB=request['teamB'],
+                date=request['day'], time=request['starttime'], field=field, type='friendly')
 
                 # update database
                 cursor.execute(
