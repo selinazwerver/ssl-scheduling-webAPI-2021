@@ -1,5 +1,7 @@
 import threading
 import time
+import csv
+import os
 from datetime import datetime
 from subprocess import Popen, PIPE
 
@@ -63,14 +65,22 @@ class CommunicationHandler():
             day, hour = self.dataHandler.date_to_hour(request['day'] + ' ' + request['starttime'])
             print('[CommHandler][send_friendly_request] Sending new friendly request, hour =', hour)
             self.lock.acquire()
-            result, newtime, field = 'try again', 48, 0  # replace by part below when we have that
-            # process = Popen(['data/ssl-scheduling/data/script.sh'], stdout=PIPE, stderr=PIPE)
-            # stdout, stderr = process.communicate()
-            # print(stdout)
-            # print(stderr)
-            # process.wait()
+            # result, newtime, field = 'try again', 48, 0  # replace by part below when we have that
+            process = Popen(['data/ssl-scheduling/data/script.sh', str(hour)], stdout=PIPE, stderr=PIPE)
+            stdout, stderr = process.communicate()
+            print(stdout)
+            print(stderr)
+            process.wait()
             self.lock.release()
+            reader = csv.reader(open('data/friendly.csv', 'r'), delimiter=',')
+
+            for data in reader:
+                result = data[0]
+                newtime = data[1]
+                field = data[2]
+
             print('[CommHandler][send_friendly_request] Result request:', result)
+            os.remove('data/friendly.csv')
 
             conn = self.dataHandler.get_db_connection('friendlies')
             cursor = conn.cursor()
