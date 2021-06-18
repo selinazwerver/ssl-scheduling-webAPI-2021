@@ -73,6 +73,13 @@ class DataHandler():
         conn_schedule.row_factory = sqlite3.Row
         return conn_schedule
 
+    def clear_friendly_requests(self):
+        conn = self.get_db_connection('friendlies')
+        cursor = conn.cursor()
+        cursor.execute('DELETE FROM friendlies')
+        conn.commit()
+        conn.close()
+
     def schedule_csv_to_db(self, name, init=False):  # use this only once for the initial database
         filename = name + '.csv'
         conn = self.get_db_connection('schedule')
@@ -100,6 +107,8 @@ class DataHandler():
             date=day, time=data[self.csv_format['time']], referee=referee, type='match')
         conn.commit()
         conn.close()
+
+        self.export_schedule_to_csv()
 
     def update_tournament_db(self):
         if path.exists('data/new_match.csv'):
