@@ -4,6 +4,7 @@ from datetime import datetime
 
 from flask import Flask, render_template, request, url_for, flash, redirect
 from waitress import serve
+from subprocess import Popen, PIPE
 
 from CommunicationHandler import CommunicationHandler
 from DataHandler import DataHandler
@@ -16,8 +17,13 @@ dataHandler = DataHandler()
 commHandler = CommunicationHandler()
 
 # Initialise database and availability
-# dataHandler.update_team_availability(name='schedule', init=True, type='csv')
-# dataHandler.schedule_csv_to_db(name='schedule', init=True)
+dataHandler.update_team_availability(name='schedule', init=True, type='csv')
+dataHandler.schedule_csv_to_db(name='schedule', init=True)
+process = Popen(['data/ssl-scheduling/data/reset.sh'], stdout=PIPE, stderr=PIPE)
+stdout, stderr = process.communicate()
+print(stdout)
+print(stderr)
+process.wait()
 
 
 ###############################################################
