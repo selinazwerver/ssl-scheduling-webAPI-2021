@@ -4,6 +4,7 @@ from datetime import datetime
 
 from flask import Flask, render_template, request, url_for, flash, redirect
 from waitress import serve
+from subprocess import Popen, PIPE
 
 from CommunicationHandler import CommunicationHandler
 from DataHandler import DataHandler
@@ -18,6 +19,14 @@ commHandler = CommunicationHandler()
 # Initialise database and availability
 dataHandler.update_team_availability(name='schedule', init=True, type='csv')
 dataHandler.schedule_csv_to_db(name='schedule', init=True)
+<<<<<<< HEAD
+=======
+process = Popen(['data/ssl-scheduling/data/reset.sh'], stdout=PIPE, stderr=PIPE)
+stdout, stderr = process.communicate()
+print(stdout)
+print(stderr)
+process.wait()
+>>>>>>> 3817dbc86d57e3dc323244cbbc1d49e73976f2c7
 
 
 ###############################################################
@@ -39,7 +48,7 @@ def tournament_json():
     print('[tournament_json]')
     conn = dataHandler.get_db_connection('schedule')
     cursor = conn.cursor()
-    schedule = cursor.execute('SELECT day, starttime, referee FROM schedule').fetchall()
+    schedule = cursor.execute('SELECT day, starttime, field, referee FROM schedule').fetchall()
     conn.close()
     return json.dumps([dict(ix) for ix in schedule])
 
@@ -161,8 +170,8 @@ def request_friendly():
             flash('Date is required!')
         elif not starttime:
             flash('Time is required!')
-        elif (datetime.now() < datetime.strptime('2021-06-23 00:00', '%Y-%m-%d %H:%M')):
-            flash('You can only request friendlies after 23-06-2021!')
+        # elif (datetime.now() < datetime.strptime('2021-06-23 00:00', '%Y-%m-%d %H:%M')):
+        #     flash('You can only request friendlies after 23-06-2021!')
         else:
             return redirect(url_for('check_friendly', team_a=team_a, team_b=team_b, date=date, starttime=starttime))
 
@@ -184,12 +193,12 @@ def check_friendly():
     # put the results in the database
     if (request.method == 'POST') and (request.form['submit'] == 'submit'):
         # insert request in friendly database
-        # conn = dataHandler.get_db_connection('friendlies')
-        # cur = conn.cursor()
-        # conn.execute('INSERT INTO friendlies (day, teamA, teamB, starttime, status, timestamp) VALUES (?,?,?,?,?,?)',
-        #  (date, team_a, team_b, starttime, 'Pending', datetime.now()))
-        # conn.commit()
-        # conn.close()
+        conn = dataHandler.get_db_connection('friendlies')
+        cur = conn.cursor()
+        conn.execute('INSERT INTO friendlies (day, teamA, teamB, starttime, status, timestamp) VALUES (?,?,?,?,?,?)',
+         (date, team_a, team_b, starttime, 'Pending', datetime.now()))
+        conn.commit()
+        conn.close()
         return redirect(url_for('request_overview'))
 
     return render_template('check_friendly.html', team_a=team_a, team_b=team_b, date=date,
