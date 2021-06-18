@@ -16,8 +16,8 @@ dataHandler = DataHandler()
 commHandler = CommunicationHandler()
 
 # Initialise database and availability
-# dataHandler.update_team_availability(name='schedule', init=True, type='csv')
-# dataHandler.schedule_csv_to_db(name='schedule', init=True)
+dataHandler.update_team_availability(name='schedule', init=True, type='csv')
+dataHandler.schedule_csv_to_db(name='schedule', init=True)
 
 
 ###############################################################
@@ -206,10 +206,86 @@ def request_overview():
 
 
 ###############################################################
+########################### REFEREE ###########################
+###############################################################
+@app.route('/replace_referee', methods=['GET', 'POST'])
+def replace_referee():
+    print('[replace_referee]')
+
+    conn = dataHandler.get_db_connection('schedule')
+    cursor = conn.cursor()
+
+    if request.method == 'POST':
+        team_a = request.form['team_a']
+        team_b = request.form['team_b']
+        date = request.form['date']
+        starttime = request.form['time']
+        newref1 = request.form['newref1']
+        newref2 = request.form['newref2']
+
+        # check if combination of data exists
+        cursor.execute(
+            'SELECT rowid FROM schedule WHERE teamA = ? AND teamB = ? AND starttime = ? AND day = ?',
+            (team_a, team_b, starttime, date))
+        rows = cursor.fetchall()
+
+        # send a warning if something is missing
+        if not team_a:
+            flash('Team A is required!')
+        elif not team_b:
+            flash('Team B is required!')
+        elif not date:
+            flash('Date is required!')
+        elif not starttime:
+            flash('Time is required!')
+        elif not newref1:
+            flash('Primary referee is required!')
+        elif not newref2:
+            flash('Seconday referee is required!')
+        elif len(rows) == 0:
+            flash('Match does not exist')
+        else:
+            return redirect(url_for('check_referee', team_a=team_a, team_b=team_b, date=date, starttime=starttime, newref1=newref1, newref2=newref2))
+
+
+    return render_template('replace_referee.html')
+
+
+@app.route('/check_referee', methods=['GET', 'POST'])
+def check_referee():
+    print('[check_referee]')
+
+    team_a = request.args['team_a']
+    team_b = request.args['team_b']
+    date = request.args['date']
+    starttime = request.args['starttime']
+    newref1 = request.args['newref1']
+    newref2 = request.args['newref2']
+
+    # can be left out but is here for clarity; cancel puts you back to the form
+    if (request.method == 'POST') and (request.form['submit'] == 'cancel'):
+        return render_template('replace_referee.html')
+
+    # put the new referees in the database
+    if (request.method == 'POST') and (request.form['submit'] == 'submit'):
+        # insert new referees in schedule database
+        conn = dataHandler.get_db_connection('schedule')
+        cur = conn.cursor()
+        cur.execute(
+            'UPDATE schedule SET referee = ? WHERE teamA = ? AND teamB = ? AND starttime = ? AND day = ?',
+            (newref1 + ', ' + newref2, team_a, team_b, starttime, date))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('tournament'))
+
+    return render_template('check_referee.html', team_a=team_a, team_b=team_b, date=date,
+                           starttime=starttime, newref1=newref1, newref2=newref2)
+
+###############################################################
 ############################# RUN #############################
 ###############################################################
 update_thread = threading.Thread(target=commHandler.update)
-update_thread.start()
+# update_thread.start()
 
 serve(app, host="0.0.0.0", port=5000)
-update_thread.join()
+# update_thread.join()

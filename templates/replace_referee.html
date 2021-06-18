@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>{% block title %} Replace referees {% endblock %}</h1>
+<!-- <p>Please enter the new referees in the format "Ref1, Ref2".</p> -->
+
+<form method="post">
+    <div className="inputBox">
+
+        <!--  Date & Time-->
+  <div class = "flex">
+    <label for="date">Date</label>
+    <input type="date" name="date" id="date"
+           min="2021-06-21" max="2021-06-27"
+           value="{{ request.form['date'] }}"/>
+    <label for="time">Start time</label>
+    <input type="time" name="time" id="time" step="3600"
+           value="{{ request.form['time'] }}"/>
+  </div>
+
+<!--  Team A-->
+  <div class = "flex">
+    <label for="team_a">Team A</label>
+    <select id="team_a" name="team_a">
+      <option value="ER-Force">ER-Force</option>
+      <option value="KgpKubs">KgpKubs</option>
+      <option value="MRL">MRL</option>
+      <option value="KIKS">KIKS</option>
+      <option value="Omid">Omid</option>
+      <option value="RoboCIn">RoboCIn</option>
+      <option value="RoboDragons">RoboDragons</option>
+      <option value="RoboFEI">RoboFEI</option>
+      <option value="RoboJackets">RoboJackets</option>
+      <option value="RoboTeam Twente">RoboTeam Twente</option>
+      <option value="SRC">SRC</option>
+      <option value="TIGERs Mannheim">TIGERs Mannheim</option>
+      <option value="Tritons RCSC">Tritons RCSC</option>
+      <option value="UBC Thunderbots">UBC Thunderbots</option>
+      <option value="URoboRus">URoboRus</option>
+      <option value="RoboIME">RoboIME</option>
+    </select>
+    </div>
+
+<!--  Team B-->
+    <div class = "flex">
+      <label for="team_b">Team B</label>
+      <select id="team_b" name="team_b">
+      <option value="ER-Force">ER-Force</option>
+      <option value="KgpKubs">KgpKubs</option>
+      <option value="MRL">MRL</option>
+      <option value="KIKS">KIKS</option>
+      <option value="Omid">Omid</option>
+      <option value="RoboCIn">RoboCIn</option>
+      <option value="RoboDragons">RoboDragons</option>
+      <option value="RoboFEI">RoboFEI</option>
+      <option value="RoboJackets">RoboJackets</option>
+      <option value="RoboTeam Twente">RoboTeam Twente</option>
+      <option value="SRC">SRC</option>
+      <option value="TIGERs Mannheim">TIGERs Mannheim</option>
+      <option value="Tritons RCSC">Tritons RCSC</option>
+      <option value="UBC Thunderbots">UBC Thunderbots</option>
+      <option value="URoboRus">URoboRus</option>
+      <option value="RoboIME">RoboIME</option>
+    </select>
+    </div>
+
+<!-- New referee -->
+<div class = "flex">
+    <label for="newref1">New primary referee</label>
+    <select id="newref1" name="newref1">
+        <option value="ER-Force">ER-Force</option>
+        <option value="KgpKubs">KgpKubs</option>
+        <option value="KIKS">KIKS</option>
+        <option value="Omid">Omid</option>
+        <option value="RoboCIn">RoboCIn</option>
+        <option value="RoboDragons">RoboDragons</option>
+        <option value="RoboFEI">RoboFEI</option>
+        <option value="RoboJackets">RoboJackets</option>
+        <option value="RoboTeam Twente">RoboTeam Twente</option>
+        <option value="SRC">SRC</option>
+        <option value="TIGERs Mannheim">TIGERs Mannheim</option>
+        <option value="Tritons RCSC">Tritons RCSC</option>
+        <option value="UBC Thunderbots">UBC Thunderbots</option>
+        <option value="URoboRus">URoboRus</option>
+        <option value="RoboIME">RoboIME</option>
+    </select>
+    </div>
+    <div class = "flex">
+    <label for="newref2">New secondary referee</label>
+    <select id="newref2" name="newref2">
+        <option value="ER-Force">ER-Force</option>
+        <option value="KgpKubs">KgpKubs</option>
+        <option value="KIKS">KIKS</option>
+        <option value="Omid">Omid</option>
+        <option value="RoboCIn">RoboCIn</option>
+        <option value="RoboDragons">RoboDragons</option>
+        <option value="RoboFEI">RoboFEI</option>
+        <option value="RoboJackets">RoboJackets</option>
+        <option value="RoboTeam Twente">RoboTeam Twente</option>
+        <option value="SRC">SRC</option>
+        <option value="TIGERs Mannheim">TIGERs Mannheim</option>
+        <option value="Tritons RCSC">Tritons RCSC</option>
+        <option value="UBC Thunderbots">UBC Thunderbots</option>
+        <option value="URoboRus">URoboRus</option>
+        <option value="RoboIME">RoboIME</option>
+    </select>
+    </div>
+
+
+
+    <div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</div>
+</form>
+{% endblock %}
