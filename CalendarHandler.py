@@ -41,6 +41,16 @@ class CalendarHandler():
             return 'c_d4igj5ugl0hutsmdnkgaac87ss@group.calendar.google.com'
         elif field == 'D':
             return 'c_c1n27rok56cg74fauicqkma0uc@group.calendar.google.com'
+    
+    def field_to_zoom_link(self, field):
+        if field == 'A':
+            return 'https://zoom.us/j/94261508077?pwd=T1NPa2N4cHhQZEFvNExLa0RwWWhWZz09'
+        elif field == 'B':
+            return 'https://zoom.us/j/94839398702?pwd=M3FhYVNVZVIrczlKSkgvdmdubU5UQT09'
+        elif field == 'C':
+            return 'https://zoom.us/j/99874175325?pwd=OVZrSE5hRlNvZ0YycHpGWW1pdEpyQT09'
+        elif field == 'D':
+            return 'https://zoom.us/j/91864341130?pwd=MWpDVXBhcU1oL1ZYVERKZ3V4UW9adz09'
 
     def write_event_to_calendar(self, teamA, teamB, date, time, field, type, referee='None'):
         startTime = date + 'T' + time + ':00-00:00'
@@ -57,7 +67,7 @@ class CalendarHandler():
         event = {
             'summary': title,
             'location': field,
-            'description': 'Referees: ' + referee,
+            'description': 'Referees: ' + referee + '. Zoom link: ' + self.field_to_zoom_link(field),
             'start': {
                 'dateTime': startTime,
                 'timeZone': 'Iceland',
