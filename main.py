@@ -17,14 +17,14 @@ dataHandler = DataHandler()
 commHandler = CommunicationHandler()
 
 # Initialise database and availability
-dataHandler.update_team_availability(name='schedule', init=True, type='csv')
-dataHandler.schedule_csv_to_db(name='schedule', init=True)
-dataHandler.clear_friendly_requests()
-process = Popen(['data/ssl-scheduling/data/reset.sh'], stdout=PIPE, stderr=PIPE)
-stdout, stderr = process.communicate()
-print(stdout)
-print(stderr)
-process.wait()
+# dataHandler.update_team_availability(name='schedule', init=True, type='csv')
+# dataHandler.schedule_csv_to_db(name='schedule', init=True)
+# dataHandler.clear_friendly_requests()
+# process = Popen(['data/ssl-scheduling/data/reset.sh'], stdout=PIPE, stderr=PIPE)
+# stdout, stderr = process.communicate()
+# print(stdout)
+# print(stderr)
+# process.wait()
 
 
 ###############################################################
@@ -62,6 +62,12 @@ def tournament():
     schedule = conn.execute('SELECT * FROM schedule ORDER BY day, starttime').fetchall()
     conn.close()
     return render_template('tournament_overview.html', schedule=schedule)
+
+@app.route('/calendar', methods=['GET'])
+def calendar():
+    # overview of the tournament in calendar format
+    print('[calendar]')
+    return render_template('calendar.html')
 
 
 ###############################################################

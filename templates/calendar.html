@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+.responsiveCal {
+position: absolute; top:0; left: 0; width: 100%; height: 100%;
+}
+
+.responsiveCal iframe {
+position: absolute; top:0; left: 0; width: 100%; height: 100%;
+}
+</style>
+
+
+<div class="responsiveCal">
+<iframe src="https://calendar.google.com/calendar/embed?height=600&amp;wkst=2&amp;bgcolor=%23ffffff&amp;ctz=Atlantic%2FReykjavik&amp;src=Y19rMjNiams3MWI1dHFtM29kMW9zam5kdTVta0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t&amp;src=Y19uMHFjMmZtMm90YnU1bTVraWFiOGdzZWZnOEBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&amp;src=Y19kNGlnajV1Z2wwaHV0c21kbmtnYWFjODdzc0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t&amp;src=Y19jMW4yN3JvazU2Y2c3NGZhdWljcWttYTB1Y0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t&amp;src=Y182am5qZzdlajE5cnRzMDJxM21mOGdjYjJsb0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t&amp;color=%2333B679&amp;color=%23F09300&amp;color=%230B8043&amp;color=%239E69AF&amp;color=%238E24AA&amp;mode=WEEK" style="border-width:0" width="1000" height="600" frameborder="0" scrolling="no"></iframe>
+</div>
+
+{% endblock %}
