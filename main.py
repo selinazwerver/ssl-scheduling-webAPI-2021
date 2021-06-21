@@ -174,6 +174,7 @@ def request_friendly():
             flash('Date is required!')
         elif not starttime:
             flash('Time is required!')
+        
         else:
             return redirect(url_for('check_friendly', team_a=team_a, team_b=team_b, date=date, starttime=starttime))
 
@@ -291,16 +292,31 @@ def check_referee():
         # update availability of old and new referees
         oldref1, oldref2 = oldref.split(", ")
         day,hour = dataHandler.date_to_hour(date + ' ' + starttime)
-        dataHandler.update_team_availability(type='oldref', init=False, name='None', data=[oldref1, hour])
-        dataHandler.update_team_availability(type='oldref', init=False, name='None', data=[oldref2, hour])
-        dataHandler.update_team_availability(type='ref', init=False, name='None', data=[newref1, hour])
-        dataHandler.update_team_availability(type='ref', init=False, name='None', data=[newref2, hour])
+
+        if oldref1 != 'OC' and oldref1 != 'TC':
+            dataHandler.update_team_availability(type='oldref', init=False, name='None', data=[oldref1, hour])
+        
+        if oldref2 != 'OC' and oldref2 != 'TC':    
+            dataHandler.update_team_availability(type='oldref', init=False, name='None', data=[oldref2, hour])
+        
+        if newref1 != 'OC' and newref1 != 'TC':
+            dataHandler.update_team_availability(type='ref', init=False, name='None', data=[newref1, hour])
+
+        if newref2 != 'OC' and newref2 != 'TC':
+            dataHandler.update_team_availability(type='ref', init=False, name='None', data=[newref2, hour])
 
         # update referee counters
-        dataHandler.update_referee_counter(team=oldref1, type='old_first')
-        dataHandler.update_referee_counter(team=oldref2, type='old_first')
-        dataHandler.update_referee_counter(team=newref1, type='first')
-        dataHandler.update_referee_counter(team=newref2, type='second')
+        if oldref1 != 'OC' and oldref1 != 'TC':
+            dataHandler.update_referee_counter(team=oldref1, type='old_first')
+        
+        if oldref2 != 'OC' and oldref2 != 'TC':
+            dataHandler.update_referee_counter(team=oldref2, type='old_first')
+
+        if newref1 != 'OC' and newref1 != 'TC':
+            dataHandler.update_referee_counter(team=newref1, type='first')
+        
+        if newref2 != 'OC' and newref2 != 'TC':
+            dataHandler.update_referee_counter(team=newref2, type='second')
 
         # insert new referees in schedule database
         cursor.execute(
