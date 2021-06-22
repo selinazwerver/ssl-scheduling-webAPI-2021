@@ -108,7 +108,7 @@ class CommunicationHandler():
             elif result == 'try again':  # update timestamp in the database to new time
                 # newtime is in absolute hours, convert to datetime structure
                 print('[CommHandler][send_friendly_request] Try again at hour:', newtime)
-                newday, newtime = self.dataHandler.hour_to_date(newtime)
+                newday, newtime = self.dataHandler.hour_to_date(int(newtime))
                 print('[CommHandler][send_friendly_request] Try again at date:', newday, newtime)
 
                 cursor.execute(
